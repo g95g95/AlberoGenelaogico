@@ -153,7 +153,9 @@ function ExportTab() {
   const relationships = useTreeStore((s) => s.relationships);
   const meta = useTreeStore((s) => s.meta);
   const layout = useTreeStore((s) => s.layout);
-  const settings = useSettingsStore((s) => ({ theme: s.theme, locale: s.locale }));
+  const theme = useSettingsStore((s) => s.theme);
+  const locale = useSettingsStore((s) => s.locale);
+  const settings = { theme, locale };
 
   const handleJsonExport = () => {
     const project = exportProject({ persons, relationships, meta, layout, settings });

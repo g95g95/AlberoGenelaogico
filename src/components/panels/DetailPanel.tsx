@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useTreeStore } from "@/stores/treeStore";
@@ -12,8 +13,10 @@ export function DetailPanel() {
   const detailPanelOpen = useUiStore((s) => s.detailPanelOpen);
   const selectedPersonId = useUiStore((s) => s.selectedPersonId);
   const closeDetailPanel = useUiStore((s) => s.closeDetailPanel);
-  const person = useTreeStore((s) =>
-    s.persons.find((p) => p.id === selectedPersonId)
+  const persons = useTreeStore((s) => s.persons);
+  const person = useMemo(
+    () => persons.find((p) => p.id === selectedPersonId),
+    [persons, selectedPersonId]
   );
 
   const prefersReducedMotion = useReducedMotion();

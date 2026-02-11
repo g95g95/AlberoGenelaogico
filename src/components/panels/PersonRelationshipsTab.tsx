@@ -1,11 +1,14 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useTreeStore } from "@/stores/treeStore";
 import { useUiStore } from "@/stores/uiStore";
 
 export function PersonRelationshipsTab({ personId }: { personId: string }) {
   const { t } = useTranslation();
-  const relationships = useTreeStore((s) =>
-    s.relationships.filter((r) => r.from === personId || r.to === personId)
+  const allRelationships = useTreeStore((s) => s.relationships);
+  const relationships = useMemo(
+    () => allRelationships.filter((r) => r.from === personId || r.to === personId),
+    [allRelationships, personId]
   );
   const persons = useTreeStore((s) => s.persons);
   const deleteRelationship = useTreeStore((s) => s.deleteRelationship);

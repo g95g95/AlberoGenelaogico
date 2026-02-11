@@ -11,8 +11,8 @@ export function CanvasToolbar() {
   const relationships = useTreeStore((s) => s.relationships);
   const layout = useTreeStore((s) => s.layout);
   const setLayout = useTreeStore((s) => s.setLayout);
-  const canUndo = useTreeStore((s) => s.canUndo());
-  const canRedo = useTreeStore((s) => s.canRedo());
+  const canUndo = useTreeStore((s) => s._pastStates.length > 0);
+  const canRedo = useTreeStore((s) => s._futureStates.length > 0);
   const undo = useTreeStore((s) => s.undo);
   const redo = useTreeStore((s) => s.redo);
   const toggleMinimap = useUiStore((s) => s.toggleMinimap);
