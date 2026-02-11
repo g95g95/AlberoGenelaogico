@@ -43,8 +43,9 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
 
   useEffect(() => {
     setSearchQuery(query);
-    setSearchResults(results.map((r) => r.id));
-  }, [query, results, setSearchQuery, setSearchResults]);
+    const ids = results.map((r) => r.id);
+    setSearchResults(ids);
+  }, [query, results.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

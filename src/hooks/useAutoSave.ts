@@ -1,17 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import { useTreeStore } from "@/stores/treeStore";
 
 const STORAGE_KEY = "familytree-project";
 const DEBOUNCE_MS = 500;
 
+let _saveStatus: "saved" | "saving" | "idle" = "idle";
+const listeners = new Set<() => void>();
+
+function setSaveStatus(status: "saved" | "saving" | "idle") {
+  _saveStatus = status;
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot() {
+  return _saveStatus;
+}
+
 export function useAutoSave() {
-  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "idle">("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const initialLoadDone = useRef(false);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
-    if (initialLoadDone.current) return;
-    initialLoadDone.current = true;
+    if (loadedRef.current) return;
+    loadedRef.current = true;
 
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -25,12 +41,18 @@ export function useAutoSave() {
   }, []);
 
   useEffect(() => {
-    const unsub = useTreeStore.subscribe((state) => {
+    let skipFirst = true;
+    const unsub = useTreeStore.subscribe(() => {
+      // Skip the first notification (from initial load)
+      if (skipFirst) {
+        skipFirst = false;
+        return;
+      }
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       setSaveStatus("saving");
 
       timeoutRef.current = setTimeout(() => {
-        const { persons, relationships, meta, layout } = state;
+        const { persons, relationships, meta, layout } = useTreeStore.getState();
         const data = { persons, relationships, meta, layout };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         setSaveStatus("saved");
@@ -43,5 +65,7 @@ export function useAutoSave() {
     };
   }, []);
 
-  return saveStatus;
+  const getSnapshotCb = useCallback(() => getSnapshot(), []);
+
+  return useSyncExternalStore(subscribe, getSnapshotCb);
 }
