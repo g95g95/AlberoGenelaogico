@@ -4,7 +4,8 @@
     "search": "Search people...",
     "saved": "Saved",
     "saving": "Saving...",
-    "newProject": "New Project"
+    "newProject": "New Project",
+    "newProjectConfirm": "The current project will be deleted. Continue?"
   },
   "person": {
     "firstName": "First Name",

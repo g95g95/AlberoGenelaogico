@@ -14,6 +14,7 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
   const { t, i18n } = useTranslation();
   const persons = useTreeStore((s) => s.persons);
   const meta = useTreeStore((s) => s.meta);
+  const clearProject = useTreeStore((s) => s.clearProject);
   const theme = useSettingsStore((s) => s.theme);
   const locale = useSettingsStore((s) => s.locale);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -22,6 +23,8 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
   const openDetailPanel = useUiStore((s) => s.openDetailPanel);
   const setSearchQuery = useUiStore((s) => s.setSearchQuery);
   const setSearchResults = useUiStore((s) => s.setSearchResults);
+  const showConfirmDialog = useUiStore((s) => s.showConfirmDialog);
+  const closeDetailPanel = useUiStore((s) => s.closeDetailPanel);
 
   const [query, setQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -76,11 +79,38 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
     i18n.changeLanguage(next);
   };
 
+  const handleNewProject = () => {
+    if (persons.length === 0) return;
+    showConfirmDialog(
+      t("app.newProject"),
+      t("app.newProjectConfirm"),
+      () => {
+        closeDetailPanel();
+        selectPerson(null);
+        clearProject();
+        localStorage.removeItem("familytree-project");
+      }
+    );
+  };
+
   return (
     <header className="h-14 px-4 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-sm shrink-0 dark:bg-bg-dark/80 dark:border-gray-700">
       <div className="flex items-center gap-3">
         <h1 className="text-lg font-bold text-salvia">{t("app.title")}</h1>
         <span className="text-xs text-gray-400 hidden sm:block">{meta.name}</span>
+        {persons.length > 0 && (
+          <button
+            onClick={handleNewProject}
+            title={t("app.newProject")}
+            aria-label={t("app.newProject")}
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salvia/50"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="7" y1="1" x2="7" y2="13" />
+              <line x1="1" y1="7" x2="13" y2="7" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

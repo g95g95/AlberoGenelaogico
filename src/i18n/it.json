@@ -4,7 +4,8 @@
     "search": "Cerca persone...",
     "saved": "Salvato",
     "saving": "Salvataggio...",
-    "newProject": "Nuovo Progetto"
+    "newProject": "Nuovo Progetto",
+    "newProjectConfirm": "Il progetto attuale verrà cancellato. Continuare?"
   },
   "person": {
     "firstName": "Nome",
