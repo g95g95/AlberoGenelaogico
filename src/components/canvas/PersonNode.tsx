@@ -41,8 +41,10 @@ export const PersonNode = memo(function PersonNode({
         className={`rounded-2xl border-l-4 bg-white shadow-md transition-all cursor-pointer min-w-[200px] dark:bg-surface-dark dark:shadow-lg ${genderBorderColors[person.gender]} ${selected ? "ring-2 ring-salvia shadow-lg" : ""}`}
         onDoubleClick={() => openDetailPanel(person.id)}
       >
-        <Handle type="target" position={Position.Top} className="!bg-gray-400 !w-2 !h-2 !border-0" />
-        <Handle type="source" position={Position.Bottom} className="!bg-gray-400 !w-2 !h-2 !border-0" />
+        <Handle type="target" position={Position.Top} id="top" className="!bg-gray-400 !w-2 !h-2 !border-0" />
+        <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-gray-400 !w-2 !h-2 !border-0" />
+        <Handle type="source" position={Position.Right} id="right" className="!bg-terracotta !w-2 !h-2 !border-0" />
+        <Handle type="target" position={Position.Left} id="left" className="!bg-terracotta !w-2 !h-2 !border-0" />
 
         <div className="flex items-center gap-3 p-3">
           {person.photo ? (

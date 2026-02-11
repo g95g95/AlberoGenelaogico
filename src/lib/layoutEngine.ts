@@ -14,8 +14,8 @@ export function computeLayout(
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: orientation === "vertical" ? "TB" : "LR",
-    nodesep: 80,
-    ranksep: 120,
+    nodesep: 100,
+    ranksep: 140,
     marginx: 50,
     marginy: 50,
   });
@@ -28,12 +28,12 @@ export function computeLayout(
   }
 
   const personIds = new Set(persons.map((p) => p.id));
+
+  // Only use parent-child edges for dagre ranking (vertical hierarchy)
   for (const rel of relationships) {
     if (!personIds.has(rel.from) || !personIds.has(rel.to)) continue;
     if (rel.type === "parent-child") {
       g.setEdge(rel.from, rel.to);
-    } else if (rel.type === "partner") {
-      g.setEdge(rel.from, rel.to, { minlen: 0 });
     }
   }
 
@@ -47,6 +47,27 @@ export function computeLayout(
         x: node.x - NODE_WIDTH / 2,
         y: node.y - NODE_HEIGHT / 2,
       };
+    }
+  }
+
+  // Post-process: place partners on the same Y level, side by side
+  for (const rel of relationships) {
+    if (rel.type !== "partner") continue;
+    if (!nodePositions[rel.from] || !nodePositions[rel.to]) continue;
+
+    const posA = nodePositions[rel.from];
+    const posB = nodePositions[rel.to];
+
+    // Align Y to the same level (use the one dagre assigned first)
+    const sharedY = Math.min(posA.y, posB.y);
+    posA.y = sharedY;
+    posB.y = sharedY;
+
+    // Ensure they're side by side with proper spacing
+    if (Math.abs(posA.x - posB.x) < NODE_WIDTH + 40) {
+      const midX = (posA.x + posB.x) / 2;
+      posA.x = midX - (NODE_WIDTH / 2 + 30);
+      posB.x = midX + (NODE_WIDTH / 2 + 30);
     }
   }
 
