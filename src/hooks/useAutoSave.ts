@@ -33,6 +33,15 @@ export function useAutoSave() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const data = JSON.parse(raw);
+        if (data.meta && !data.meta.projectType) {
+          data.meta.projectType = "familyTree";
+        }
+        if (data.relationships) {
+          data.relationships = data.relationships.map((r: any) => ({
+            ...r,
+            location: r.location ?? null,
+          }));
+        }
         useTreeStore.getState().loadProject(data);
       }
     } catch {

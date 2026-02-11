@@ -108,17 +108,17 @@ const persons: Person[] = [
 ];
 
 const relationships: Relationship[] = [
-  { id: "r1", type: "partner", from: "p1", to: "p2", subtype: "married", startDate: "1955", endDate: null },
-  { id: "r2", type: "partner", from: "p3", to: "p4", subtype: "married", startDate: "1958", endDate: null },
-  { id: "r3", type: "parent-child", from: "p1", to: "p5", subtype: "biological", startDate: null, endDate: null },
-  { id: "r4", type: "parent-child", from: "p2", to: "p5", subtype: "biological", startDate: null, endDate: null },
-  { id: "r5", type: "parent-child", from: "p3", to: "p6", subtype: "biological", startDate: null, endDate: null },
-  { id: "r6", type: "parent-child", from: "p4", to: "p6", subtype: "biological", startDate: null, endDate: null },
-  { id: "r7", type: "partner", from: "p5", to: "p6", subtype: "married", startDate: "1988", endDate: null },
-  { id: "r8", type: "parent-child", from: "p5", to: "p7", subtype: "biological", startDate: null, endDate: null },
-  { id: "r9", type: "parent-child", from: "p6", to: "p7", subtype: "biological", startDate: null, endDate: null },
-  { id: "r10", type: "parent-child", from: "p5", to: "p8", subtype: "biological", startDate: null, endDate: null },
-  { id: "r11", type: "parent-child", from: "p6", to: "p8", subtype: "biological", startDate: null, endDate: null },
+  { id: "r1", type: "partner", from: "p1", to: "p2", subtype: "married", startDate: "1955", endDate: null, location: null },
+  { id: "r2", type: "partner", from: "p3", to: "p4", subtype: "married", startDate: "1958", endDate: null, location: null },
+  { id: "r3", type: "parent-child", from: "p1", to: "p5", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r4", type: "parent-child", from: "p2", to: "p5", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r5", type: "parent-child", from: "p3", to: "p6", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r6", type: "parent-child", from: "p4", to: "p6", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r7", type: "partner", from: "p5", to: "p6", subtype: "married", startDate: "1988", endDate: null, location: null },
+  { id: "r8", type: "parent-child", from: "p5", to: "p7", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r9", type: "parent-child", from: "p6", to: "p7", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r10", type: "parent-child", from: "p5", to: "p8", subtype: "biological", startDate: null, endDate: null, location: null },
+  { id: "r11", type: "parent-child", from: "p6", to: "p8", subtype: "biological", startDate: null, endDate: null, location: null },
 ];
 
 const meta: ProjectMeta = {
@@ -127,6 +127,7 @@ const meta: ProjectMeta = {
   createdAt: "2026-02-11T10:00:00Z",
   updatedAt: "2026-02-11T10:00:00Z",
   author: "Demo",
+  projectType: "familyTree",
 };
 
 const layout: LayoutConfig = {

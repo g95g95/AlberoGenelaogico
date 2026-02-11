@@ -31,6 +31,7 @@ export function FamilyTreeCanvas() {
   const selectPerson = useUiStore((s) => s.selectPerson);
   const selectedPersonId = useUiStore((s) => s.selectedPersonId);
   const minimapVisible = useUiStore((s) => s.minimapVisible);
+  const projectType = useTreeStore((s) => s.meta.projectType);
   const theme = useSettingsStore((s) => s.theme);
   const { fitView } = useReactFlow();
 
@@ -52,7 +53,7 @@ export function FamilyTreeCanvas() {
     }
     const hasPositions = Object.keys(layout.nodePositions).length > 0;
     if (!hasPositions) {
-      const result = computeLayout(persons, relationships, layout.orientation);
+      const result = computeLayout(persons, relationships, layout.orientation, projectType);
       setLayout({ nodePositions: result.nodePositions });
       setTimeout(() => fitView({ padding: 0.2, duration: 300 }), 100);
       return;
@@ -67,18 +68,19 @@ export function FamilyTreeCanvas() {
         selected: person.id === selectedPersonId,
       }))
     );
-  }, [persons, layout.nodePositions, selectedPersonId, relationships, layout.orientation, setLayout, fitView]);
+  }, [persons, layout.nodePositions, selectedPersonId, relationships, layout.orientation, setLayout, fitView, projectType]);
 
   const edges: Edge[] = useMemo(
     () =>
       relationships.map((rel) => {
         const isPartner = rel.type === "partner";
+        const isFriend = rel.type === "friend";
         return {
           id: rel.id,
           source: rel.from,
           target: rel.to,
-          sourceHandle: isPartner ? "right" : "bottom",
-          targetHandle: isPartner ? "left" : "top",
+          sourceHandle: (isPartner || isFriend) ? "right" : "bottom",
+          targetHandle: (isPartner || isFriend) ? "left" : "top",
           type: "relationship",
           data: {
             relationType: rel.type,

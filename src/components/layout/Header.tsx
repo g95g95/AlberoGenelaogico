@@ -14,6 +14,7 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
   const { t, i18n } = useTranslation();
   const persons = useTreeStore((s) => s.persons);
   const meta = useTreeStore((s) => s.meta);
+  const projectType = useTreeStore((s) => s.meta.projectType);
   const clearProject = useTreeStore((s) => s.clearProject);
   const theme = useSettingsStore((s) => s.theme);
   const locale = useSettingsStore((s) => s.locale);
@@ -98,6 +99,11 @@ export function Header({ saveStatus, onImportExport }: HeaderProps) {
       <div className="flex items-center gap-3">
         <h1 className="text-lg font-bold text-salvia">{t("app.title")}</h1>
         <span className="text-xs text-gray-400 hidden sm:block">{meta.name}</span>
+        {projectType === "friendCluster" && (
+          <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-2 py-0.5 rounded-full">
+            {t("projectType.friendCluster")}
+          </span>
+        )}
         {persons.length > 0 && (
           <button
             onClick={handleNewProject}

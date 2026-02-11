@@ -16,9 +16,10 @@ export function CanvasToolbar() {
   const undo = useTreeStore((s) => s.undo);
   const redo = useTreeStore((s) => s.redo);
   const toggleMinimap = useUiStore((s) => s.toggleMinimap);
+  const projectType = useTreeStore((s) => s.meta.projectType);
 
   const handleAutoLayout = () => {
-    const result = computeLayout(persons, relationships, layout.orientation);
+    const result = computeLayout(persons, relationships, layout.orientation, projectType);
     setLayout({ nodePositions: result.nodePositions });
   };
 
@@ -26,7 +27,7 @@ export function CanvasToolbar() {
     const newOrientation =
       layout.orientation === "vertical" ? "horizontal" : "vertical";
     setLayout({ orientation: newOrientation });
-    const result = computeLayout(persons, relationships, newOrientation);
+    const result = computeLayout(persons, relationships, newOrientation, projectType);
     setLayout({ nodePositions: result.nodePositions });
   };
 

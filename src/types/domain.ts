@@ -9,6 +9,7 @@ export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 export const RELATION_TYPES = {
   partner: "partner",
   parentChild: "parent-child",
+  friend: "friend",
 } as const;
 export type RelationType = (typeof RELATION_TYPES)[keyof typeof RELATION_TYPES];
 
@@ -30,6 +31,27 @@ export const PARENT_CHILD_SUBTYPES = {
 export type ParentChildSubtype =
   (typeof PARENT_CHILD_SUBTYPES)[keyof typeof PARENT_CHILD_SUBTYPES];
 
+export const PROJECT_TYPES = {
+  familyTree: "familyTree",
+  friendCluster: "friendCluster",
+} as const;
+export type ProjectType = (typeof PROJECT_TYPES)[keyof typeof PROJECT_TYPES];
+
+export const FRIEND_SUBTYPES = {
+  university: "university",
+  highSchool: "highSchool",
+  middleSchool: "middleSchool",
+  elementary: "elementary",
+  summerCityFriend: "summerCityFriend",
+  sport: "sport",
+  romantic: "romantic",
+  flirt: "flirt",
+  workColleague: "workColleague",
+  neighbor: "neighbor",
+  acquaintance: "acquaintance",
+} as const;
+export type FriendSubtype = (typeof FRIEND_SUBTYPES)[keyof typeof FRIEND_SUBTYPES];
+
 export interface Person {
   id: string;
   firstName: string;
@@ -49,9 +71,10 @@ export interface Relationship {
   type: RelationType;
   from: string;
   to: string;
-  subtype: PartnerSubtype | ParentChildSubtype;
+  subtype: PartnerSubtype | ParentChildSubtype | FriendSubtype;
   startDate: string | null;
   endDate: string | null;
+  location: string | null;
 }
 
 export interface ProjectMeta {
@@ -60,6 +83,7 @@ export interface ProjectMeta {
   createdAt: string;
   updatedAt: string;
   author: string;
+  projectType: ProjectType;
 }
 
 export interface HandlePosition {

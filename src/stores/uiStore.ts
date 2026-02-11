@@ -4,7 +4,7 @@ import type { RelationType } from "@/types/domain";
 interface AddPersonMode {
   personId: string;
   type: RelationType;
-  direction: "parent" | "child" | "partner";
+  direction: "parent" | "child" | "partner" | "friend";
 }
 
 interface ConfirmDialogState {

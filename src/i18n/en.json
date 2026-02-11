@@ -44,7 +44,34 @@
     "subtype": "Subtype",
     "startDate": "Start Date",
     "endDate": "End Date",
-    "delete": "Delete relationship"
+    "delete": "Delete relationship",
+    "edit": "Edit",
+    "parentOf": "Parent of",
+    "childOf": "Child of",
+    "friendOf": "Friend of",
+    "location": "Location"
+  },
+  "friendRelationship": {
+    "title": "Friendship",
+    "university": "University together",
+    "highSchool": "High school together",
+    "middleSchool": "Middle school classmates",
+    "elementary": "Elementary school classmates",
+    "summerCityFriend": "Summer/city friend",
+    "sport": "Sports together",
+    "romantic": "Were together",
+    "flirt": "Flirt",
+    "workColleague": "Work colleagues",
+    "neighbor": "Neighbors",
+    "acquaintance": "Acquaintances",
+    "location": "City/Place",
+    "addFriend": "Add friend",
+    "selectSubtype": "Select friendship type"
+  },
+  "projectType": {
+    "familyTree": "Family tree",
+    "friendCluster": "Friend cluster",
+    "select": "Choose project type"
   },
   "canvas": {
     "zoomIn": "Zoom in",
@@ -101,7 +128,9 @@
     "subtitle": "Add the first person to get started",
     "addFirst": "Add person",
     "loadDemo": "Load example",
-    "loadWindsor": "Load Windsor family"
+    "loadWindsor": "Load Windsor family",
+    "titleFriend": "Start your friend cluster",
+    "subtitleFriend": "Add the first person to get started"
   },
   "mobile": {
     "listView": "List view",

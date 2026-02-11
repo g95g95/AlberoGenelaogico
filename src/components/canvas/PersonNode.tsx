@@ -1,5 +1,6 @@
 import { memo, useState, useCallback, useRef, useEffect } from "react";
 import { Handle, Position, useUpdateNodeInternals, type NodeProps } from "@xyflow/react";
+import { useTranslation } from "react-i18next";
 import type { Person, HandlePosition } from "@/types/domain";
 import { getInitials, getAvatarColor } from "@/utils/avatar";
 import { formatDateRange } from "@/utils/date";
@@ -66,6 +67,7 @@ export const PersonNode = memo(function PersonNode({
   data,
   selected,
 }: NodeProps & { data: PersonNodeData }) {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
   const [movingHandle, setMovingHandle] = useState<string | null>(null);
   const [previewPos, setPreviewPos] = useState<HandlePosition | null>(null);
@@ -73,6 +75,7 @@ export const PersonNode = memo(function PersonNode({
   const openDetailPanel = useUiStore((s) => s.openDetailPanel);
   const setAddPersonMode = useUiStore((s) => s.setAddPersonMode);
   const setLayout = useTreeStore((s) => s.setLayout);
+  const projectType = useTreeStore((s) => s.meta.projectType);
   const layoutRef = useRef(useTreeStore.getState().layout);
   const updateNodeInternals = useUpdateNodeInternals();
 
@@ -226,50 +229,77 @@ export const PersonNode = memo(function PersonNode({
 
       {hovered && !movingHandle && (
         <div className="flex justify-center gap-1 pt-1 pb-1">
-          <ActionButton
-            tooltip="Aggiungi Genitore"
-            onClick={(e) => {
-              e.stopPropagation();
-              setAddPersonMode({
-                personId: person.id,
-                type: "parent-child",
-                direction: "parent",
-              });
-            }}
-            label="G"
-          />
-          <ActionButton
-            tooltip="Aggiungi Figlio"
-            onClick={(e) => {
-              e.stopPropagation();
-              setAddPersonMode({
-                personId: person.id,
-                type: "parent-child",
-                direction: "child",
-              });
-            }}
-            label="F"
-          />
-          <ActionButton
-            tooltip="Aggiungi Partner"
-            onClick={(e) => {
-              e.stopPropagation();
-              setAddPersonMode({
-                personId: person.id,
-                type: "partner",
-                direction: "partner",
-              });
-            }}
-            label="P"
-          />
-          <ActionButton
-            tooltip="Dettagli"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDetailPanel(person.id);
-            }}
-            label="i"
-          />
+          {projectType === "friendCluster" ? (
+            <>
+              <ActionButton
+                tooltip={t("friendRelationship.addFriend")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddPersonMode({
+                    personId: person.id,
+                    type: "friend",
+                    direction: "friend",
+                  });
+                }}
+                label="A"
+              />
+              <ActionButton
+                tooltip={t("panel.info")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openDetailPanel(person.id);
+                }}
+                label="i"
+              />
+            </>
+          ) : (
+            <>
+              <ActionButton
+                tooltip={t("person.addParent")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddPersonMode({
+                    personId: person.id,
+                    type: "parent-child",
+                    direction: "parent",
+                  });
+                }}
+                label="G"
+              />
+              <ActionButton
+                tooltip={t("person.addChild")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddPersonMode({
+                    personId: person.id,
+                    type: "parent-child",
+                    direction: "child",
+                  });
+                }}
+                label="F"
+              />
+              <ActionButton
+                tooltip={t("person.addPartner")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddPersonMode({
+                    personId: person.id,
+                    type: "partner",
+                    direction: "partner",
+                  });
+                }}
+                label="P"
+              />
+              <ActionButton
+                tooltip={t("panel.info")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openDetailPanel(person.id);
+                }}
+                label="i"
+              />
+            </>
+          )}
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import dagre from "@dagrejs/dagre";
-import type { Person, Relationship } from "@/types/domain";
+import type { Person, Relationship, ProjectType } from "@/types/domain";
 
 interface LayoutResult {
   nodePositions: Record<string, { x: number; y: number }>;
@@ -8,12 +8,15 @@ interface LayoutResult {
 export function computeLayout(
   persons: Person[],
   relationships: Relationship[],
-  orientation: "vertical" | "horizontal" = "vertical"
+  orientation: "vertical" | "horizontal" = "vertical",
+  projectType: ProjectType = "familyTree"
 ): LayoutResult {
+  const isFriendCluster = projectType === "friendCluster";
+
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({
-    rankdir: orientation === "vertical" ? "TB" : "LR",
+    rankdir: isFriendCluster ? "LR" : (orientation === "vertical" ? "TB" : "LR"),
     nodesep: 100,
     ranksep: 140,
     marginx: 50,
@@ -29,10 +32,9 @@ export function computeLayout(
 
   const personIds = new Set(persons.map((p) => p.id));
 
-  // Only use parent-child edges for dagre ranking (vertical hierarchy)
   for (const rel of relationships) {
     if (!personIds.has(rel.from) || !personIds.has(rel.to)) continue;
-    if (rel.type === "parent-child") {
+    if (isFriendCluster || rel.type === "parent-child") {
       g.setEdge(rel.from, rel.to);
     }
   }
@@ -50,24 +52,23 @@ export function computeLayout(
     }
   }
 
-  // Post-process: place partners on the same Y level, side by side
-  for (const rel of relationships) {
-    if (rel.type !== "partner") continue;
-    if (!nodePositions[rel.from] || !nodePositions[rel.to]) continue;
+  if (!isFriendCluster) {
+    for (const rel of relationships) {
+      if (rel.type !== "partner") continue;
+      if (!nodePositions[rel.from] || !nodePositions[rel.to]) continue;
 
-    const posA = nodePositions[rel.from];
-    const posB = nodePositions[rel.to];
+      const posA = nodePositions[rel.from];
+      const posB = nodePositions[rel.to];
 
-    // Align Y to the same level (use the one dagre assigned first)
-    const sharedY = Math.min(posA.y, posB.y);
-    posA.y = sharedY;
-    posB.y = sharedY;
+      const sharedY = Math.min(posA.y, posB.y);
+      posA.y = sharedY;
+      posB.y = sharedY;
 
-    // Ensure they're side by side with proper spacing
-    if (Math.abs(posA.x - posB.x) < NODE_WIDTH + 40) {
-      const midX = (posA.x + posB.x) / 2;
-      posA.x = midX - (NODE_WIDTH / 2 + 30);
-      posB.x = midX + (NODE_WIDTH / 2 + 30);
+      if (Math.abs(posA.x - posB.x) < NODE_WIDTH + 40) {
+        const midX = (posA.x + posB.x) / 2;
+        posA.x = midX - (NODE_WIDTH / 2 + 30);
+        posB.x = midX + (NODE_WIDTH / 2 + 30);
+      }
     }
   }
 

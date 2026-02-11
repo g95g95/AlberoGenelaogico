@@ -24,7 +24,7 @@ describe('computeLayout', () => {
     const relationships: Relationship[] = [
       {
         id: 'r1', type: 'parent-child', from: 'p1', to: 'p2',
-        subtype: 'biological', startDate: null, endDate: null,
+        subtype: 'biological', startDate: null, endDate: null, location: null,
       },
     ]
 
@@ -52,7 +52,7 @@ describe('computeLayout', () => {
     const relationships: Relationship[] = [
       {
         id: 'r1', type: 'parent-child', from: 'p1', to: 'p2',
-        subtype: 'biological', startDate: null, endDate: null,
+        subtype: 'biological', startDate: null, endDate: null, location: null,
       },
     ]
 

@@ -129,6 +129,7 @@ export function parseGedcom(text: string): GedcomResult {
         subtype: fam.divorced ? "divorced" : fam.married ? "married" : "partner",
         startDate: null,
         endDate: null,
+        location: null,
       });
     }
 
@@ -143,6 +144,7 @@ export function parseGedcom(text: string): GedcomResult {
           subtype: "biological",
           startDate: null,
           endDate: null,
+          location: null,
         });
       }
     }

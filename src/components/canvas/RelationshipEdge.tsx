@@ -5,7 +5,7 @@ import {
 } from "@xyflow/react";
 
 type RelEdgeData = {
-  relationType: "partner" | "parent-child";
+  relationType: "partner" | "parent-child" | "friend";
   subtype: string | null;
 };
 
@@ -43,6 +43,22 @@ export function RelationshipEdge(props: EdgeProps & { data?: RelEdgeData }) {
       } else if (data.subtype === "step") {
         strokeDasharray = "12 4";
       }
+    } else if (data.relationType === "friend") {
+      strokeWidth = 2;
+      const friendColors: Record<string, string> = {
+        university: "#3B82F6",
+        highSchool: "#60A5FA",
+        middleSchool: "#93C5FD",
+        elementary: "#818CF8",
+        summerCityFriend: "#F59E0B",
+        sport: "#10B981",
+        romantic: "#EF4444",
+        flirt: "#F472B6",
+        workColleague: "#14B8A6",
+        neighbor: "#22C55E",
+        acquaintance: "#9CA3AF",
+      };
+      strokeColor = friendColors[data.subtype ?? ""] ?? "#9CA3AF";
     }
   }
 

@@ -62,6 +62,7 @@ function ImportTab({ onClose }: { onClose: () => void }) {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
               author: "",
+              projectType: "familyTree",
             },
             layout: {
               orientation: "vertical",

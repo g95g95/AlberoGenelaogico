@@ -137,7 +137,7 @@ describe('serializeGedcom', () => {
     const relationships = [
       {
         id: 'r1', type: 'partner' as const, from: 'p1', to: 'p2',
-        subtype: 'married' as const, startDate: null, endDate: null,
+        subtype: 'married' as const, startDate: null, endDate: null, location: null,
       },
     ]
 

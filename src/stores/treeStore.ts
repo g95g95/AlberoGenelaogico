@@ -46,6 +46,7 @@ const defaultMeta: ProjectMeta = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   author: "",
+  projectType: "familyTree",
 };
 
 const defaultLayout: LayoutConfig = {
@@ -133,7 +134,7 @@ export const useTreeStore = create<TreeState & TreeActions>()(
       set((state) => {
         state.persons = data.persons;
         state.relationships = data.relationships;
-        state.meta = data.meta;
+        state.meta = { ...data.meta, projectType: data.meta.projectType ?? "familyTree" };
         state.layout = data.layout;
         state._pastStates = [];
         state._futureStates = [];

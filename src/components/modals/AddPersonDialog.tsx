@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/Button";
 import { useTreeStore } from "@/stores/treeStore";
 import { useUiStore } from "@/stores/uiStore";
 import { generateId } from "@/utils/id";
-import type { Gender, PartnerSubtype, ParentChildSubtype } from "@/types/domain";
+import type { Gender, FriendSubtype } from "@/types/domain";
+
+const FRIEND_SUBTYPE_KEYS: FriendSubtype[] = [
+  "university", "highSchool", "middleSchool", "elementary",
+  "summerCityFriend", "sport", "romantic", "flirt",
+  "workColleague", "neighbor", "acquaintance",
+];
 
 export function AddPersonDialog() {
   const { t } = useTranslation();
@@ -19,14 +25,19 @@ export function AddPersonDialog() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState<Gender>("unknown");
+  const [friendSubtype, setFriendSubtype] = useState<FriendSubtype>("university");
+  const [location, setLocation] = useState("");
 
   const open = addPersonMode !== null;
+  const isFriend = addPersonMode?.direction === "friend";
 
   const handleClose = () => {
     setAddPersonMode(null);
     setFirstName("");
     setLastName("");
     setGender("unknown");
+    setFriendSubtype("university");
+    setLocation("");
   };
 
   const handleAdd = () => {
@@ -47,29 +58,34 @@ export function AddPersonDialog() {
       customFields: {},
     });
 
-    const { type: relType, direction, personId } = addPersonMode;
-    let subtype: PartnerSubtype | ParentChildSubtype = null;
-    if (relType === "partner") {
-      subtype = "partner";
+    if (isFriend) {
+      addRelationship({
+        id: generateId("r"),
+        type: "friend",
+        from: addPersonMode.personId,
+        to: newId,
+        subtype: friendSubtype,
+        startDate: null,
+        endDate: null,
+        location: friendSubtype === "summerCityFriend" && location ? location : null,
+      });
     } else {
-      subtype = "biological";
+      const { type: relType, direction, personId } = addPersonMode;
+      const subtype = relType === "partner" ? "partner" : "biological";
+      const from = direction === "parent" ? newId : personId;
+      const to = direction === "parent" ? personId : newId;
+
+      addRelationship({
+        id: generateId("r"),
+        type: relType,
+        from,
+        to,
+        subtype,
+        startDate: null,
+        endDate: null,
+        location: null,
+      });
     }
-
-    // "parent" direction: new person is parent OF existing → from=new, to=existing
-    // "child" direction: new person is child OF existing → from=existing, to=new
-    // "partner": from=existing, to=new
-    const from = direction === "parent" ? newId : personId;
-    const to = direction === "parent" ? personId : newId;
-
-    addRelationship({
-      id: generateId("r"),
-      type: relType,
-      from,
-      to,
-      subtype,
-      startDate: null,
-      endDate: null,
-    });
 
     handleClose();
   };
@@ -80,6 +96,11 @@ export function AddPersonDialog() {
     { value: "female", label: t("person.female") },
     { value: "other", label: t("person.other") },
   ];
+
+  const friendSubtypeOptions = FRIEND_SUBTYPE_KEYS.map((key) => ({
+    value: key,
+    label: t(`friendRelationship.${key}`),
+  }));
 
   return (
     <Dialog open={open} onClose={handleClose} title={t("dialog.add")}>
@@ -101,6 +122,24 @@ export function AddPersonDialog() {
           value={gender}
           onChange={(e) => setGender(e.target.value as Gender)}
         />
+        {isFriend && (
+          <>
+            <Select
+              label={t("friendRelationship.selectSubtype")}
+              options={friendSubtypeOptions}
+              value={friendSubtype}
+              onChange={(e) => setFriendSubtype(e.target.value as FriendSubtype)}
+            />
+            {friendSubtype === "summerCityFriend" && (
+              <Input
+                label={t("relationship.location")}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder={t("friendRelationship.location")}
+              />
+            )}
+          </>
+        )}
       </div>
       <div className="flex justify-end gap-2 mt-4">
         <Button variant="secondary" onClick={handleClose}>

@@ -22,7 +22,7 @@ const PersonSchema = z.object({
 
 const RelationshipSchema = z.object({
   id: z.string(),
-  type: z.union([z.literal("partner"), z.literal("parent-child")]),
+  type: z.union([z.literal("partner"), z.literal("parent-child"), z.literal("friend")]),
   from: z.string(),
   to: z.string(),
   subtype: z
@@ -34,10 +34,22 @@ const RelationshipSchema = z.object({
       z.literal("adopted"),
       z.literal("foster"),
       z.literal("step"),
+      z.literal("university"),
+      z.literal("highSchool"),
+      z.literal("middleSchool"),
+      z.literal("elementary"),
+      z.literal("summerCityFriend"),
+      z.literal("sport"),
+      z.literal("romantic"),
+      z.literal("flirt"),
+      z.literal("workColleague"),
+      z.literal("neighbor"),
+      z.literal("acquaintance"),
     ])
     .nullable(),
   startDate: z.string().nullable(),
   endDate: z.string().nullable(),
+  location: z.string().nullable().default(null),
 });
 
 const ProjectSchema = z.object({
@@ -48,6 +60,7 @@ const ProjectSchema = z.object({
     createdAt: z.string(),
     updatedAt: z.string(),
     author: z.string(),
+    projectType: z.union([z.literal("familyTree"), z.literal("friendCluster")]).optional().default("familyTree"),
   }),
   persons: z.array(PersonSchema),
   relationships: z.array(RelationshipSchema),

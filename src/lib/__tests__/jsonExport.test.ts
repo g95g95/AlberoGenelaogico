@@ -11,6 +11,7 @@ function makeValidProject(): FamilyTreeProject {
       createdAt: '2025-01-01T00:00:00Z',
       updatedAt: '2025-01-01T00:00:00Z',
       author: 'Tester',
+      projectType: 'familyTree',
     },
     persons: [
       {

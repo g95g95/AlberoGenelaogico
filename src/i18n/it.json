@@ -44,7 +44,34 @@
     "subtype": "Sottotipo",
     "startDate": "Data inizio",
     "endDate": "Data fine",
-    "delete": "Elimina relazione"
+    "delete": "Elimina relazione",
+    "edit": "Modifica",
+    "parentOf": "Genitore di",
+    "childOf": "Figlio di",
+    "friendOf": "Amico di",
+    "location": "Luogo"
+  },
+  "friendRelationship": {
+    "title": "Amicizia",
+    "university": "Università insieme",
+    "highSchool": "Superiori insieme",
+    "middleSchool": "Compagni medie",
+    "elementary": "Compagni elementari",
+    "summerCityFriend": "Amico del mare/città",
+    "sport": "Sport insieme",
+    "romantic": "Stati insieme",
+    "flirt": "Flirt",
+    "workColleague": "Colleghi di lavoro",
+    "neighbor": "Vicini di casa",
+    "acquaintance": "Conoscenti",
+    "location": "Città/Luogo",
+    "addFriend": "Aggiungi amico",
+    "selectSubtype": "Seleziona tipo di amicizia"
+  },
+  "projectType": {
+    "familyTree": "Albero genealogico",
+    "friendCluster": "Cluster amici",
+    "select": "Scegli tipo progetto"
   },
   "canvas": {
     "zoomIn": "Zoom avanti",
@@ -101,7 +128,9 @@
     "subtitle": "Aggiungi la prima persona per iniziare",
     "addFirst": "Aggiungi persona",
     "loadDemo": "Carica esempio",
-    "loadWindsor": "Carica famiglia Windsor"
+    "loadWindsor": "Carica famiglia Windsor",
+    "titleFriend": "Inizia il tuo cluster amici",
+    "subtitleFriend": "Aggiungi la prima persona per iniziare"
   },
   "mobile": {
     "listView": "Vista lista",

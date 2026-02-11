@@ -28,6 +28,7 @@ function makeRelationship(overrides: Partial<Relationship> = {}): Relationship {
     subtype: 'married',
     startDate: null,
     endDate: null,
+    location: null,
     ...overrides,
   }
 }
@@ -166,6 +167,7 @@ describe('treeStore', () => {
         createdAt: '2025-01-01T00:00:00Z',
         updatedAt: '2025-01-01T00:00:00Z',
         author: 'Tester',
+        projectType: 'familyTree',
       }
       const layout: LayoutConfig = {
         orientation: 'horizontal',
@@ -197,6 +199,7 @@ describe('treeStore', () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           author: '',
+          projectType: 'familyTree',
         },
         layout: { orientation: 'vertical', rootPersonId: null, nodePositions: {} },
       })
