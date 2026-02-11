@@ -1,0 +1,114 @@
+{
+  "app": {
+    "title": "FamilyTree",
+    "search": "Search people...",
+    "saved": "Saved",
+    "saving": "Saving...",
+    "newProject": "New Project"
+  },
+  "person": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "unknown": "Unknown",
+    "birthDate": "Birth Date",
+    "birthPlace": "Birth Place",
+    "deathDate": "Death Date",
+    "deathPlace": "Death Place",
+    "photo": "Photo",
+    "notes": "Notes",
+    "customFields": "Custom Fields",
+    "addField": "Add field",
+    "deletePerson": "Delete person",
+    "addParent": "Add parent",
+    "addChild": "Add child",
+    "addPartner": "Add partner"
+  },
+  "relationship": {
+    "title": "Relationships",
+    "partner": "Partner",
+    "parentChild": "Parent-Child",
+    "married": "Married",
+    "divorced": "Divorced",
+    "partnerType": "Partners",
+    "biological": "Biological",
+    "adopted": "Adopted",
+    "foster": "Foster",
+    "step": "Step",
+    "type": "Type",
+    "subtype": "Subtype",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "delete": "Delete relationship"
+  },
+  "canvas": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fitView": "Fit view",
+    "undo": "Undo",
+    "redo": "Redo",
+    "autoLayout": "Auto layout",
+    "orientation": "Orientation",
+    "minimap": "Minimap",
+    "vertical": "Vertical",
+    "horizontal": "Horizontal"
+  },
+  "dialog": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "delete": "Delete",
+    "add": "Add"
+  },
+  "import": {
+    "title": "Import",
+    "dropzone": "Drop a file here or click to select",
+    "formats": "Supported formats: JSON, GEDCOM (.ged)",
+    "success": "Import completed",
+    "error": "Error during import"
+  },
+  "export": {
+    "title": "Export",
+    "json": "JSON Project",
+    "pdf": "PDF Document",
+    "png": "PNG Image",
+    "svg": "SVG Image",
+    "gedcom": "GEDCOM File"
+  },
+  "panel": {
+    "info": "Info",
+    "relationships": "Relationships",
+    "notes": "Notes"
+  },
+  "onboarding": {
+    "welcome": "Welcome to FamilyTree!",
+    "step1": "Start by adding yourself to your family tree.",
+    "step2": "Use the + buttons on nodes to add family members.",
+    "step3": "Export and share your tree in different formats.",
+    "start": "Start from yourself",
+    "skip": "Skip",
+    "next": "Next",
+    "done": "Done"
+  },
+  "empty": {
+    "title": "Start your family tree",
+    "subtitle": "Add the first person to get started",
+    "addFirst": "Add person",
+    "loadDemo": "Load example"
+  },
+  "mobile": {
+    "listView": "List view",
+    "treeView": "Tree view"
+  },
+  "settings": {
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language"
+  }
+}

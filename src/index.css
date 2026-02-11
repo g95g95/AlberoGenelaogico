@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bg-light: #FAFAF8;
+  --color-bg-dark: #0F0F14;
+  --color-surface-light: #FFFFFF;
+  --color-surface-dark: #1A1A24;
+  --color-salvia: #7C9A72;
+  --color-salvia-light: #A3C49A;
+  --color-terracotta: #C87941;
+  --color-terracotta-light: #E0A070;
+  --color-azure: #6B9AC4;
+  --color-azure-light: #94BBD9;
+  --color-male: #6B9AC4;
+  --color-female: #D4849A;
+  --color-other: #9B8EC4;
+  --color-unknown: #9CA3AF;
+}
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg-light);
+  color: #1a1a2e;
+}
+
+.dark body {
+  background-color: var(--color-bg-dark);
+  color: #e4e4e7;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.react-flow__minimap {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "app": {
+    "title": "FamilyTree",
+    "search": "Cerca persone...",
+    "saved": "Salvato",
+    "saving": "Salvataggio...",
+    "newProject": "Nuovo Progetto"
+  },
+  "person": {
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "gender": "Genere",
+    "male": "Maschio",
+    "female": "Femmina",
+    "other": "Altro",
+    "unknown": "Sconosciuto",
+    "birthDate": "Data di nascita",
+    "birthPlace": "Luogo di nascita",
+    "deathDate": "Data di morte",
+    "deathPlace": "Luogo di morte",
+    "photo": "Foto",
+    "notes": "Note",
+    "customFields": "Campi personalizzati",
+    "addField": "Aggiungi campo",
+    "deletePerson": "Elimina persona",
+    "addParent": "Aggiungi genitore",
+    "addChild": "Aggiungi figlio",
+    "addPartner": "Aggiungi partner"
+  },
+  "relationship": {
+    "title": "Relazioni",
+    "partner": "Partner",
+    "parentChild": "Genitore-Figlio",
+    "married": "Sposati",
+    "divorced": "Divorziati",
+    "partnerType": "Conviventi",
+    "biological": "Biologico",
+    "adopted": "Adottato",
+    "foster": "Affidamento",
+    "step": "Acquisito",
+    "type": "Tipo",
+    "subtype": "Sottotipo",
+    "startDate": "Data inizio",
+    "endDate": "Data fine",
+    "delete": "Elimina relazione"
+  },
+  "canvas": {
+    "zoomIn": "Zoom avanti",
+    "zoomOut": "Zoom indietro",
+    "fitView": "Adatta alla vista",
+    "undo": "Annulla",
+    "redo": "Ripeti",
+    "autoLayout": "Layout automatico",
+    "orientation": "Orientamento",
+    "minimap": "Minimappa",
+    "vertical": "Verticale",
+    "horizontal": "Orizzontale"
+  },
+  "dialog": {
+    "confirm": "Conferma",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "save": "Salva",
+    "delete": "Elimina",
+    "add": "Aggiungi"
+  },
+  "import": {
+    "title": "Importa",
+    "dropzone": "Trascina un file qui o clicca per selezionare",
+    "formats": "Formati supportati: JSON, GEDCOM (.ged)",
+    "success": "Importazione completata",
+    "error": "Errore durante l'importazione"
+  },
+  "export": {
+    "title": "Esporta",
+    "json": "Progetto JSON",
+    "pdf": "Documento PDF",
+    "png": "Immagine PNG",
+    "svg": "Immagine SVG",
+    "gedcom": "File GEDCOM"
+  },
+  "panel": {
+    "info": "Info",
+    "relationships": "Relazioni",
+    "notes": "Note"
+  },
+  "onboarding": {
+    "welcome": "Benvenuto in FamilyTree!",
+    "step1": "Inizia aggiungendo te stesso al tuo albero genealogico.",
+    "step2": "Usa i pulsanti + sui nodi per aggiungere familiari.",
+    "step3": "Esporta e condividi il tuo albero in diversi formati.",
+    "start": "Inizia da te",
+    "skip": "Salta",
+    "next": "Avanti",
+    "done": "Fatto"
+  },
+  "empty": {
+    "title": "Inizia il tuo albero genealogico",
+    "subtitle": "Aggiungi la prima persona per iniziare",
+    "addFirst": "Aggiungi persona",
+    "loadDemo": "Carica esempio"
+  },
+  "mobile": {
+    "listView": "Vista lista",
+    "treeView": "Vista albero"
+  },
+  "settings": {
+    "theme": "Tema",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "system": "Sistema",
+    "language": "Lingua"
+  }
+}
