@@ -63,7 +63,7 @@ export function FamilyTreeCanvas() {
         id: person.id,
         type: "person" as const,
         position: layout.nodePositions[person.id] ?? { x: 0, y: 0 },
-        data: { person },
+        data: { person, handlePositions: layout.handlePositions?.[person.id] },
         selected: person.id === selectedPersonId,
       }))
     );

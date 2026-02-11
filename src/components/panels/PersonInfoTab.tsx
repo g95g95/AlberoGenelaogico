@@ -169,6 +169,15 @@ export function PersonInfoTab({ person }: { person: Person }) {
             onChange={handlePhotoUpload}
           />
         </label>
+        {person.photo && (
+          <button
+            onClick={() => updatePerson(person.id, { photo: null })}
+            className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
+            aria-label={t("person.removePhoto")}
+          >
+            {t("person.removePhoto")}
+          </button>
+        )}
       </div>
 
       <Input

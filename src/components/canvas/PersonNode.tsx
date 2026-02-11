@@ -1,12 +1,14 @@
-import { memo, useState } from "react";
-import { Handle, Position, type NodeProps } from "@xyflow/react";
-import type { Person } from "@/types/domain";
+import { memo, useState, useCallback, useRef, useEffect } from "react";
+import { Handle, Position, useUpdateNodeInternals, type NodeProps } from "@xyflow/react";
+import type { Person, HandlePosition } from "@/types/domain";
 import { getInitials, getAvatarColor } from "@/utils/avatar";
 import { formatDateRange } from "@/utils/date";
 import { useUiStore } from "@/stores/uiStore";
+import { useTreeStore } from "@/stores/treeStore";
 
 type PersonNodeData = {
   person: Person;
+  handlePositions?: Record<string, HandlePosition>;
 };
 
 const genderBorderColors: Record<string, string> = {
@@ -16,35 +18,170 @@ const genderBorderColors: Record<string, string> = {
   unknown: "border-l-unknown",
 };
 
+const SIDE_TO_POSITION: Record<string, Position> = {
+  top: Position.Top,
+  bottom: Position.Bottom,
+  left: Position.Left,
+  right: Position.Right,
+};
+
+const DEFAULT_HANDLES: Record<string, HandlePosition> = {
+  top: { side: "top", offset: 50 },
+  bottom: { side: "bottom", offset: 50 },
+  right: { side: "right", offset: 50 },
+  left: { side: "left", offset: 50 },
+};
+
+function getHandleStyle(pos: HandlePosition): React.CSSProperties {
+  const { side, offset } = pos;
+  if (side === "top" || side === "bottom") {
+    return { left: `${offset}%`, transform: "translateX(-50%)" };
+  }
+  return { top: `${offset}%`, transform: "translateY(-50%)" };
+}
+
+// Given mouse position relative to node, find closest point on border
+function closestBorderPoint(
+  mx: number,
+  my: number,
+  w: number,
+  h: number
+): HandlePosition {
+  const candidates: { side: HandlePosition["side"]; offset: number; dist: number }[] = [
+    { side: "top", offset: clamp((mx / w) * 100, 5, 95), dist: Math.abs(my) },
+    { side: "bottom", offset: clamp((mx / w) * 100, 5, 95), dist: Math.abs(my - h) },
+    { side: "left", offset: clamp((my / h) * 100, 5, 95), dist: Math.abs(mx) },
+    { side: "right", offset: clamp((my / h) * 100, 5, 95), dist: Math.abs(mx - w) },
+  ];
+  candidates.sort((a, b) => a.dist - b.dist);
+  return { side: candidates[0].side, offset: candidates[0].offset };
+}
+
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
+}
+
 export const PersonNode = memo(function PersonNode({
+  id,
   data,
   selected,
 }: NodeProps & { data: PersonNodeData }) {
   const [hovered, setHovered] = useState(false);
+  const [movingHandle, setMovingHandle] = useState<string | null>(null);
+  const [previewPos, setPreviewPos] = useState<HandlePosition | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const openDetailPanel = useUiStore((s) => s.openDetailPanel);
   const setAddPersonMode = useUiStore((s) => s.setAddPersonMode);
+  const setLayout = useTreeStore((s) => s.setLayout);
+  const layoutRef = useRef(useTreeStore.getState().layout);
+  const updateNodeInternals = useUpdateNodeInternals();
 
-  const { person } = data;
-  const initials = getInitials(person.firstName, person.lastName);
-  const avatarColor = getAvatarColor(
-    `${person.firstName} ${person.lastName}`
+  useEffect(() => {
+    return useTreeStore.subscribe((s) => { layoutRef.current = s.layout; });
+  }, []);
+
+  const { person, handlePositions } = data;
+  const hp = handlePositions ?? {};
+
+  const getPos = useCallback(
+    (handleId: string): HandlePosition => {
+      if (movingHandle === handleId && previewPos) return previewPos;
+      return hp[handleId] ?? DEFAULT_HANDLES[handleId] ?? { side: "top", offset: 50 };
+    },
+    [hp, movingHandle, previewPos]
   );
+
+  const initials = getInitials(person.firstName, person.lastName);
+  const avatarColor = getAvatarColor(`${person.firstName} ${person.lastName}`);
   const dateRange = formatDateRange(person.birthDate, person.deathDate);
+
+  const handleHandleClick = useCallback(
+    (e: React.MouseEvent, handleId: string) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (movingHandle === handleId) return;
+      setMovingHandle(handleId);
+      setPreviewPos(hp[handleId] ?? DEFAULT_HANDLES[handleId]);
+    },
+    [movingHandle, hp]
+  );
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!movingHandle || !cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      setPreviewPos(closestBorderPoint(mx, my, rect.width, rect.height));
+    },
+    [movingHandle]
+  );
+
+  const handleDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!movingHandle || !previewPos) return;
+      e.stopPropagation();
+      e.preventDefault();
+
+      const layout = layoutRef.current;
+      const existing = layout.handlePositions ?? {};
+      const personHandles = { ...(existing[person.id] ?? {}), [movingHandle]: previewPos };
+      setLayout({ handlePositions: { ...existing, [person.id]: personHandles } });
+
+      setMovingHandle(null);
+      setPreviewPos(null);
+      setTimeout(() => updateNodeInternals(id), 0);
+    },
+    [movingHandle, previewPos, person.id, setLayout, updateNodeInternals, id]
+  );
+
+  const handleIds = ["top", "bottom", "right", "left"];
+  const handleTypeMap: Record<string, "source" | "target"> = {
+    top: "target",
+    bottom: "source",
+    right: "source",
+    left: "target",
+  };
+  const handleColorMap: Record<string, string> = {
+    top: "!bg-gray-400",
+    bottom: "!bg-gray-400",
+    right: "!bg-terracotta",
+    left: "!bg-terracotta",
+  };
 
   return (
     <div
       className="relative"
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => { setHovered(false); }}
+      onMouseMove={handleMouseMove}
     >
       <div
+        ref={cardRef}
         className={`rounded-2xl border-l-4 bg-white shadow-md transition-all cursor-pointer min-w-[200px] dark:bg-surface-dark dark:shadow-lg ${genderBorderColors[person.gender]} ${selected ? "ring-2 ring-salvia shadow-lg" : ""}`}
-        onDoubleClick={() => openDetailPanel(person.id)}
+        onDoubleClick={(e) => {
+          if (movingHandle) {
+            handleDoubleClick(e);
+          } else {
+            openDetailPanel(person.id);
+          }
+        }}
       >
-        <Handle type="target" position={Position.Top} id="top" className="!bg-gray-400 !w-2 !h-2 !border-0" />
-        <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-gray-400 !w-2 !h-2 !border-0" />
-        <Handle type="source" position={Position.Right} id="right" className="!bg-terracotta !w-2 !h-2 !border-0" />
-        <Handle type="target" position={Position.Left} id="left" className="!bg-terracotta !w-2 !h-2 !border-0" />
+        {handleIds.map((hid) => {
+          const pos = getPos(hid);
+          const isMoving = movingHandle === hid;
+          return (
+            <Handle
+              key={hid}
+              type={handleTypeMap[hid]}
+              position={SIDE_TO_POSITION[pos.side]}
+              id={hid}
+              className={`${handleColorMap[hid]} !border-0 ${isMoving ? "!w-3 !h-3 !bg-salvia ring-2 ring-salvia/40" : "!w-2 !h-2"}`}
+              style={getHandleStyle(pos)}
+              onClick={(e) => handleHandleClick(e, hid)}
+            />
+          );
+        })}
 
         <div className="flex items-center gap-3 p-3">
           {person.photo ? (
@@ -79,7 +216,15 @@ export const PersonNode = memo(function PersonNode({
         </div>
       </div>
 
-      {hovered && (
+      {movingHandle && (
+        <div className="absolute -bottom-6 left-0 right-0 text-center">
+          <span className="text-[10px] bg-salvia text-white px-2 py-0.5 rounded-full">
+            Doppio click per confermare
+          </span>
+        </div>
+      )}
+
+      {hovered && !movingHandle && (
         <div className="flex justify-center gap-1 pt-1 pb-1">
           <ActionButton
             tooltip="Aggiungi Genitore"

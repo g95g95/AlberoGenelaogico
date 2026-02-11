@@ -62,10 +62,16 @@ export interface ProjectMeta {
   author: string;
 }
 
+export interface HandlePosition {
+  side: "top" | "bottom" | "left" | "right";
+  offset: number; // 0-100 percentage along that side
+}
+
 export interface LayoutConfig {
   orientation: "vertical" | "horizontal";
   rootPersonId: string | null;
   nodePositions: Record<string, { x: number; y: number }>;
+  handlePositions?: Record<string, Record<string, HandlePosition>>;
 }
 
 export interface Settings {

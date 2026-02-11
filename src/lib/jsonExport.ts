@@ -58,6 +58,16 @@ const ProjectSchema = z.object({
       z.string(),
       z.object({ x: z.number(), y: z.number() })
     ),
+    handlePositions: z.record(
+      z.string(),
+      z.record(
+        z.string(),
+        z.object({
+          side: z.union([z.literal("top"), z.literal("bottom"), z.literal("left"), z.literal("right")]),
+          offset: z.number(),
+        })
+      )
+    ).optional(),
   }),
   settings: z.object({
     theme: z.union([

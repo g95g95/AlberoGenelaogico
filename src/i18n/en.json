@@ -25,7 +25,8 @@
     "deletePerson": "Delete person",
     "addParent": "Add parent",
     "addChild": "Add child",
-    "addPartner": "Add partner"
+    "addPartner": "Add partner",
+    "removePhoto": "Remove photo"
   },
   "relationship": {
     "title": "Relationships",
@@ -98,7 +99,8 @@
     "title": "Start your family tree",
     "subtitle": "Add the first person to get started",
     "addFirst": "Add person",
-    "loadDemo": "Load example"
+    "loadDemo": "Load example",
+    "loadWindsor": "Load Windsor family"
   },
   "mobile": {
     "listView": "List view",

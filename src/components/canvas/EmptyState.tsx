@@ -42,6 +42,27 @@ export function EmptyState() {
     });
   };
 
+  const handleLoadWindsor = async () => {
+    try {
+      const base = import.meta.env.BASE_URL ?? "/";
+      const res = await fetch(`${base}demo-windsor.json`);
+      const data = await res.json();
+      const result = computeLayout(
+        data.persons,
+        data.relationships,
+        data.layout?.orientation ?? "vertical"
+      );
+      loadProject({
+        persons: data.persons,
+        relationships: data.relationships,
+        meta: data.meta,
+        layout: { ...(data.layout ?? { orientation: "vertical", rootPersonId: null, nodePositions: {} }), nodePositions: result.nodePositions },
+      });
+    } catch {
+      // silently fail if file not available
+    }
+  };
+
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="text-center max-w-sm mx-auto px-4">
@@ -78,6 +99,9 @@ export function EmptyState() {
           <Button onClick={handleAddFirst}>{t("empty.addFirst")}</Button>
           <Button variant="secondary" onClick={handleLoadDemo}>
             {t("empty.loadDemo")}
+          </Button>
+          <Button variant="secondary" onClick={handleLoadWindsor}>
+            {t("empty.loadWindsor")}
           </Button>
         </div>
       </div>

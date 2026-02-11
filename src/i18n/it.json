@@ -25,7 +25,8 @@
     "deletePerson": "Elimina persona",
     "addParent": "Aggiungi genitore",
     "addChild": "Aggiungi figlio",
-    "addPartner": "Aggiungi partner"
+    "addPartner": "Aggiungi partner",
+    "removePhoto": "Rimuovi foto"
   },
   "relationship": {
     "title": "Relazioni",
@@ -98,7 +99,8 @@
     "title": "Inizia il tuo albero genealogico",
     "subtitle": "Aggiungi la prima persona per iniziare",
     "addFirst": "Aggiungi persona",
-    "loadDemo": "Carica esempio"
+    "loadDemo": "Carica esempio",
+    "loadWindsor": "Carica famiglia Windsor"
   },
   "mobile": {
     "listView": "Vista lista",
