@@ -47,7 +47,7 @@ export function AddPersonDialog() {
       customFields: {},
     });
 
-    const relType = addPersonMode.type;
+    const { type: relType, direction, personId } = addPersonMode;
     let subtype: PartnerSubtype | ParentChildSubtype = null;
     if (relType === "partner") {
       subtype = "partner";
@@ -55,11 +55,17 @@ export function AddPersonDialog() {
       subtype = "biological";
     }
 
+    // "parent" direction: new person is parent OF existing → from=new, to=existing
+    // "child" direction: new person is child OF existing → from=existing, to=new
+    // "partner": from=existing, to=new
+    const from = direction === "parent" ? newId : personId;
+    const to = direction === "parent" ? personId : newId;
+
     addRelationship({
       id: generateId("r"),
       type: relType,
-      from: addPersonMode.parentId,
-      to: newId,
+      from,
+      to,
       subtype,
       startDate: null,
       endDate: null,

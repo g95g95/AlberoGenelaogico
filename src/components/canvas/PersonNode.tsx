@@ -84,8 +84,9 @@ export const PersonNode = memo(function PersonNode({
             onClick={(e) => {
               e.stopPropagation();
               setAddPersonMode({
-                parentId: person.id,
+                personId: person.id,
                 type: "parent-child",
+                direction: "parent",
               });
             }}
             label="G"
@@ -95,8 +96,9 @@ export const PersonNode = memo(function PersonNode({
             onClick={(e) => {
               e.stopPropagation();
               setAddPersonMode({
-                parentId: person.id,
+                personId: person.id,
                 type: "parent-child",
+                direction: "child",
               });
             }}
             label="F"
@@ -105,7 +107,11 @@ export const PersonNode = memo(function PersonNode({
             tooltip="Aggiungi Partner"
             onClick={(e) => {
               e.stopPropagation();
-              setAddPersonMode({ parentId: person.id, type: "partner" });
+              setAddPersonMode({
+                personId: person.id,
+                type: "partner",
+                direction: "partner",
+              });
             }}
             label="P"
           />

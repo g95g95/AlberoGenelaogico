@@ -2,8 +2,9 @@ import { create } from "zustand";
 import type { RelationType } from "@/types/domain";
 
 interface AddPersonMode {
-  parentId: string;
+  personId: string;
   type: RelationType;
+  direction: "parent" | "child" | "partner";
 }
 
 interface ConfirmDialogState {
