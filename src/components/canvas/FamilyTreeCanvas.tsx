@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -31,38 +31,50 @@ export function FamilyTreeCanvas() {
   const selectPerson = useUiStore((s) => s.selectPerson);
   const selectedPersonId = useUiStore((s) => s.selectedPersonId);
   const minimapVisible = useUiStore((s) => s.minimapVisible);
-  const effectiveTheme = useSettingsStore((s) => s.getEffectiveTheme());
+  const theme = useSettingsStore((s) => s.theme);
   const { fitView } = useReactFlow();
 
-  // Compute layout on first load or when persons change and no positions exist
+  const effectiveTheme = useMemo(() => {
+    if (theme === "system") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    return theme;
+  }, [theme]);
+
+  const [localNodes, setLocalNodes] = useState<Node[]>([]);
+  const positionsRef = useRef(layout.nodePositions);
+  positionsRef.current = layout.nodePositions;
+
   useEffect(() => {
-    if (persons.length === 0) return;
+    if (persons.length === 0) {
+      setLocalNodes([]);
+      return;
+    }
     const hasPositions = Object.keys(layout.nodePositions).length > 0;
-    if (hasPositions) return;
+    if (!hasPositions) {
+      const result = computeLayout(persons, relationships, layout.orientation);
+      setLayout({ nodePositions: result.nodePositions });
+      setTimeout(() => fitView({ padding: 0.2, duration: 300 }), 100);
+      return;
+    }
 
-    const result = computeLayout(persons, relationships, layout.orientation);
-    setLayout({ nodePositions: result.nodePositions });
-    setTimeout(() => fitView({ padding: 0.2, duration: 300 }), 100);
-  }, [persons.length]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const nodes: Node[] = useMemo(
-    () =>
+    setLocalNodes(
       persons.map((person) => ({
         id: person.id,
-        type: "person",
+        type: "person" as const,
         position: layout.nodePositions[person.id] ?? { x: 0, y: 0 },
         data: { person },
         selected: person.id === selectedPersonId,
-      })),
-    [persons, layout.nodePositions, selectedPersonId]
-  );
+      }))
+    );
+  }, [persons, layout.nodePositions, selectedPersonId, relationships, layout.orientation, setLayout, fitView]);
 
   const edges: Edge[] = useMemo(
     () =>
       relationships.map((rel) => ({
         id: rel.id,
-        source: rel.type === "parent-child" ? rel.from : rel.from,
-        target: rel.type === "parent-child" ? rel.to : rel.to,
+        source: rel.from,
+        target: rel.to,
         type: "relationship",
         data: {
           relationType: rel.type,
@@ -74,18 +86,22 @@ export function FamilyTreeCanvas() {
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => {
-      // Apply drag changes to update positions in store
-      const updated = applyNodeChanges(changes, nodes);
-      const positionChanges = changes.filter(
-        (c) => c.type === "position" && c.position
-      );
-      if (positionChanges.length > 0) {
-        const newPositions = { ...layout.nodePositions };
-        for (const node of updated) {
-          newPositions[node.id] = { x: node.position.x, y: node.position.y };
+      setLocalNodes((nds) => {
+        const updated = applyNodeChanges(changes, nds);
+
+        const hasDragEnd = changes.some(
+          (c) => c.type === "position" && !c.dragging && c.position
+        );
+        if (hasDragEnd) {
+          const newPositions = { ...positionsRef.current };
+          for (const node of updated) {
+            newPositions[node.id] = { x: node.position.x, y: node.position.y };
+          }
+          setLayout({ nodePositions: newPositions });
         }
-        setLayout({ nodePositions: newPositions });
-      }
+
+        return updated;
+      });
 
       const selectionChange = changes.find(
         (c): c is Extract<typeof c, { type: "select" }> =>
@@ -95,7 +111,7 @@ export function FamilyTreeCanvas() {
         selectPerson(selectionChange.id);
       }
     },
-    [nodes, layout.nodePositions, setLayout, selectPerson]
+    [setLayout, selectPerson]
   );
 
   const onPaneClick = useCallback(() => {
@@ -109,7 +125,7 @@ export function FamilyTreeCanvas() {
   return (
     <div className="w-full h-full relative">
       <ReactFlow
-        nodes={nodes}
+        nodes={localNodes}
         edges={edges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
