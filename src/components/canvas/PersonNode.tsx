@@ -80,7 +80,7 @@ export const PersonNode = memo(function PersonNode({
       {hovered && (
         <div className="flex justify-center gap-1 pt-1 pb-1">
           <ActionButton
-            title="Genitore"
+            tooltip="Aggiungi Genitore"
             onClick={(e) => {
               e.stopPropagation();
               setAddPersonMode({
@@ -91,7 +91,7 @@ export const PersonNode = memo(function PersonNode({
             label="G"
           />
           <ActionButton
-            title="Figlio"
+            tooltip="Aggiungi Figlio"
             onClick={(e) => {
               e.stopPropagation();
               setAddPersonMode({
@@ -102,7 +102,7 @@ export const PersonNode = memo(function PersonNode({
             label="F"
           />
           <ActionButton
-            title="Partner"
+            tooltip="Aggiungi Partner"
             onClick={(e) => {
               e.stopPropagation();
               setAddPersonMode({ parentId: person.id, type: "partner" });
@@ -110,7 +110,7 @@ export const PersonNode = memo(function PersonNode({
             label="P"
           />
           <ActionButton
-            title="Info"
+            tooltip="Dettagli"
             onClick={(e) => {
               e.stopPropagation();
               openDetailPanel(person.id);
@@ -124,22 +124,27 @@ export const PersonNode = memo(function PersonNode({
 });
 
 function ActionButton({
-  title,
+  tooltip,
   onClick,
   label,
 }: {
-  title: string;
+  tooltip: string;
   onClick: (e: React.MouseEvent) => void;
   label: string;
 }) {
   return (
-    <button
-      title={title}
-      aria-label={title}
-      onClick={onClick}
-      className="w-6 h-6 rounded-full bg-salvia text-white text-xs font-bold flex items-center justify-center hover:bg-salvia-light shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salvia/50"
-    >
-      {label}
-    </button>
+    <div className="relative group/action">
+      <button
+        aria-label={tooltip}
+        onClick={onClick}
+        className="w-7 h-7 rounded-full bg-salvia text-white text-xs font-bold flex items-center justify-center hover:bg-salvia-light shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salvia/50"
+      >
+        {label}
+      </button>
+      <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover/action:opacity-100 shadow-lg">
+        {tooltip}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+      </span>
+    </div>
   );
 }
