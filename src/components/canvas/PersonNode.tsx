@@ -74,6 +74,7 @@ export const PersonNode = memo(function PersonNode({
   const cardRef = useRef<HTMLDivElement>(null);
   const openDetailPanel = useUiStore((s) => s.openDetailPanel);
   const setAddPersonMode = useUiStore((s) => s.setAddPersonMode);
+  const setLinkMode = useUiStore((s) => s.setLinkMode);
   const setLayout = useTreeStore((s) => s.setLayout);
   const projectType = useTreeStore((s) => s.meta.projectType);
   const layoutRef = useRef(useTreeStore.getState().layout);
@@ -244,6 +245,14 @@ export const PersonNode = memo(function PersonNode({
                 label="A"
               />
               <ActionButton
+                tooltip={t("relationship.link")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLinkMode({ fromPersonId: person.id });
+                }}
+                label="L"
+              />
+              <ActionButton
                 tooltip={t("panel.info")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -289,6 +298,14 @@ export const PersonNode = memo(function PersonNode({
                   });
                 }}
                 label="P"
+              />
+              <ActionButton
+                tooltip={t("relationship.link")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLinkMode({ fromPersonId: person.id });
+                }}
+                label="L"
               />
               <ActionButton
                 tooltip={t("panel.info")}

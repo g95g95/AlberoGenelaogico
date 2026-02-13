@@ -49,7 +49,11 @@
     "parentOf": "Parent of",
     "childOf": "Child of",
     "friendOf": "Friend of",
-    "location": "Location"
+    "location": "Location",
+    "link": "Link person",
+    "selectTarget": "Select person",
+    "selectType": "Relationship type",
+    "selectDirection": "Who is the parent?"
   },
   "friendRelationship": {
     "title": "Friendship",
@@ -91,7 +95,8 @@
     "close": "Close",
     "save": "Save",
     "delete": "Delete",
-    "add": "Add"
+    "add": "Add",
+    "addStandalone": "Add person"
   },
   "import": {
     "title": "Import",

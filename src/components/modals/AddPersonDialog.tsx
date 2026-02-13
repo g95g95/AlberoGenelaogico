@@ -19,8 +19,12 @@ export function AddPersonDialog() {
   const { t } = useTranslation();
   const addPersonMode = useUiStore((s) => s.addPersonMode);
   const setAddPersonMode = useUiStore((s) => s.setAddPersonMode);
+  const standaloneAddPosition = useUiStore((s) => s.standaloneAddPosition);
+  const setStandaloneAddPosition = useUiStore((s) => s.setStandaloneAddPosition);
   const addPerson = useTreeStore((s) => s.addPerson);
   const addRelationship = useTreeStore((s) => s.addRelationship);
+  const setLayout = useTreeStore((s) => s.setLayout);
+  const layout = useTreeStore((s) => s.layout);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -28,11 +32,13 @@ export function AddPersonDialog() {
   const [friendSubtype, setFriendSubtype] = useState<FriendSubtype>("university");
   const [location, setLocation] = useState("");
 
-  const open = addPersonMode !== null;
+  const isStandalone = standaloneAddPosition !== null;
+  const open = addPersonMode !== null || isStandalone;
   const isFriend = addPersonMode?.direction === "friend";
 
   const handleClose = () => {
     setAddPersonMode(null);
+    setStandaloneAddPosition(null);
     setFirstName("");
     setLastName("");
     setGender("unknown");
@@ -41,8 +47,6 @@ export function AddPersonDialog() {
   };
 
   const handleAdd = () => {
-    if (!addPersonMode) return;
-
     const newId = generateId("p");
     addPerson({
       id: newId,
@@ -57,6 +61,16 @@ export function AddPersonDialog() {
       notes: "",
       customFields: {},
     });
+
+    if (isStandalone) {
+      setLayout({
+        nodePositions: { ...layout.nodePositions, [newId]: standaloneAddPosition },
+      });
+      handleClose();
+      return;
+    }
+
+    if (!addPersonMode) return;
 
     if (isFriend) {
       addRelationship({
@@ -103,7 +117,7 @@ export function AddPersonDialog() {
   }));
 
   return (
-    <Dialog open={open} onClose={handleClose} title={t("dialog.add")}>
+    <Dialog open={open} onClose={handleClose} title={isStandalone ? t("dialog.addStandalone") : t("dialog.add")}>
       <div className="space-y-3">
         <Input
           label={t("person.firstName")}
@@ -122,7 +136,7 @@ export function AddPersonDialog() {
           value={gender}
           onChange={(e) => setGender(e.target.value as Gender)}
         />
-        {isFriend && (
+        {!isStandalone && isFriend && (
           <>
             <Select
               label={t("friendRelationship.selectSubtype")}

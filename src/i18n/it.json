@@ -49,7 +49,11 @@
     "parentOf": "Genitore di",
     "childOf": "Figlio di",
     "friendOf": "Amico di",
-    "location": "Luogo"
+    "location": "Luogo",
+    "link": "Collega persona",
+    "selectTarget": "Seleziona persona",
+    "selectType": "Tipo relazione",
+    "selectDirection": "Chi è il genitore?"
   },
   "friendRelationship": {
     "title": "Amicizia",
@@ -91,7 +95,8 @@
     "close": "Chiudi",
     "save": "Salva",
     "delete": "Elimina",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "addStandalone": "Aggiungi persona"
   },
   "import": {
     "title": "Importa",

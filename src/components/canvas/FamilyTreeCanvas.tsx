@@ -125,6 +125,18 @@ export function FamilyTreeCanvas() {
     selectPerson(null);
   }, [selectPerson]);
 
+  const setStandaloneAddPosition = useUiStore((s) => s.setStandaloneAddPosition);
+  const { screenToFlowPosition } = useReactFlow();
+
+  const onPaneContextMenu = useCallback(
+    (event: MouseEvent | React.MouseEvent) => {
+      event.preventDefault();
+      const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+      setStandaloneAddPosition(position);
+    },
+    [screenToFlowPosition, setStandaloneAddPosition]
+  );
+
   if (persons.length === 0) {
     return <EmptyState />;
   }
@@ -138,6 +150,7 @@ export function FamilyTreeCanvas() {
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onPaneClick={onPaneClick}
+        onPaneContextMenu={onPaneContextMenu}
         fitView
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.1}

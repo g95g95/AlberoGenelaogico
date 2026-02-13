@@ -6,6 +6,7 @@ import { FamilyTreeCanvas } from "@/components/canvas/FamilyTreeCanvas";
 import { DetailPanel } from "@/components/panels/DetailPanel";
 import { ConfirmDialog } from "@/components/modals/ConfirmDialog";
 import { AddPersonDialog } from "@/components/modals/AddPersonDialog";
+import { LinkPersonDialog } from "@/components/modals/LinkPersonDialog";
 import { ImportExportDialog } from "@/components/modals/ImportExportDialog";
 import { OnboardingDialog, useOnboarding } from "@/components/modals/OnboardingDialog";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -57,6 +58,7 @@ export function Shell() {
 
       <ConfirmDialog />
       <AddPersonDialog />
+      <LinkPersonDialog />
       <ImportExportDialog
         open={importExportOpen}
         onClose={() => setImportExportOpen(false)}
