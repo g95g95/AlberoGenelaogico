@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog } from "@/components/ui/Dialog";
 import { Select } from "@/components/ui/Select";
@@ -36,6 +36,12 @@ export function LinkPersonDialog() {
 
   const open = linkMode !== null;
   const fromPersonId = linkMode?.fromPersonId ?? "";
+
+  useEffect(() => {
+    if (linkMode?.toPersonId) {
+      setTargetId(linkMode.toPersonId);
+    }
+  }, [linkMode]);
 
   const availableTargets = useMemo(() => {
     if (!fromPersonId) return [];

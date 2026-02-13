@@ -8,6 +8,7 @@ import {
   type Node,
   type Edge,
   type OnNodesChange,
+  type OnConnect,
   applyNodeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -125,8 +126,18 @@ export function FamilyTreeCanvas() {
     selectPerson(null);
   }, [selectPerson]);
 
+  const setLinkMode = useUiStore((s) => s.setLinkMode);
   const setStandaloneAddPosition = useUiStore((s) => s.setStandaloneAddPosition);
   const { screenToFlowPosition } = useReactFlow();
+
+  const onConnect: OnConnect = useCallback(
+    (connection) => {
+      if (connection.source && connection.target && connection.source !== connection.target) {
+        setLinkMode({ fromPersonId: connection.source, toPersonId: connection.target });
+      }
+    },
+    [setLinkMode]
+  );
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent) => {
@@ -149,6 +160,7 @@ export function FamilyTreeCanvas() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
+        onConnect={onConnect}
         onPaneClick={onPaneClick}
         onPaneContextMenu={onPaneContextMenu}
         fitView

@@ -16,6 +16,7 @@ interface ConfirmDialogState {
 
 interface LinkMode {
   fromPersonId: string;
+  toPersonId?: string;
 }
 
 interface UiState {
