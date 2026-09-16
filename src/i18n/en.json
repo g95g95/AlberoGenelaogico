@@ -111,9 +111,15 @@
   "import": {
     "title": "Import",
     "dropzone": "Drop a file here or click to select",
-    "formats": "Supported formats: JSON, GEDCOM (.ged)",
+    "formats": "Supported formats: JSON, GEDCOM (.ged, .gedcom)",
     "success": "Import completed",
-    "error": "Error during import"
+    "error": "Error during import",
+    "engines": "You can import a tree exported from MyHeritage, Ancestry, FamilySearch, Geni, Gramps, Family Tree Maker and any service that exports GEDCOM.",
+    "summary": "Imported {{persons}} people and {{families}} families",
+    "fromSource": "Source: {{source}}",
+    "warnings": "Warnings ({{count}})",
+    "importAnother": "Import another file",
+    "close": "Close"
   },
   "export": {
     "title": "Export",

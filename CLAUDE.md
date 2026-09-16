@@ -74,7 +74,7 @@ Path alias: `@/*` maps to `src/*`.
 ### Domain Types (`src/types/domain.ts`)
 
 All types use `as const` objects + derived type aliases:
-- `GENDERS`, `RELATION_TYPES`, `PARTNER_SUBTYPES`, `PARENT_CHILD_SUBTYPES`, `FRIEND_SUBTYPES`, `PROJECT_TYPES`
+- `GENDERS`, `RELATION_TYPES`, `PARTNER_SUBTYPES`, `PARENT_CHILD_SUBTYPES`, `SIBLING_SUBTYPES`, `FRIEND_SUBTYPES`, `PROJECT_TYPES`
 - `Person` has `photo: string | null` (base64 data URI)
 - `Relationship` has `subtype` (union of all subtype types), `location: string | null`
 - `HandlePosition`: `{ side: "top"|"bottom"|"left"|"right", offset: number }` — user-customizable edge connection points on nodes
@@ -82,8 +82,8 @@ All types use `as const` objects + derived type aliases:
 ### Import/Export
 
 - **JSON**: Zod v4 validation schema in `src/lib/jsonExport.ts`. Uses `z.union` with literals (not `z.enum`). Import via `ProjectSchema.parse()`.
-- **GEDCOM**: Custom parser/serializer in `src/lib/gedcom.ts`. Friend relationships are ignored in GEDCOM export (not part of the standard).
-- **PDF/PNG/SVG**: Uses `html-to-image` to capture the `.react-flow` DOM element, then `jsPDF` for PDF.
+- **GEDCOM**: `src/lib/gedcomParser.ts` (record-tree parser handling CONC/CONT, GIVN/SURN, event dates/places, FAMC pedigrees), `src/lib/gedcomEncoding.ts` (UTF-8/UTF-16/Windows-1252/ANSEL detection), serializer in `src/lib/gedcom.ts`. This is the import path for trees exported from MyHeritage, Ancestry, FamilySearch, Geni & co. Friend and sibling relationships are not written to GEDCOM (not part of the standard; siblings are implied by shared parents).
+- **PDF/PNG/SVG**: Rendered from the data, never from the DOM. `src/lib/treeScene.ts` builds a resolution-independent scene; `exportPdf.ts` draws it as a vector PDF (with multi-sheet poster support), `exportImage.ts` as SVG/PNG. No screenshot library is involved.
 
 ### i18n
 
@@ -103,7 +103,7 @@ All types use `as const` objects + derived type aliases:
 2. Add Zod literal in `src/lib/jsonExport.ts` RelationshipSchema
 3. Add i18n keys in both `it.json` and `en.json`
 4. Add label mapping in `PersonRelationshipsTab.tsx` `getSubtypeLabel()`
-5. If friend type: add edge color in `RelationshipEdge.tsx`
+5. Add the edge color/dash in `src/lib/relationshipStyle.ts` (shared by the canvas and every export)
 
 ### Backward Compatibility
 
