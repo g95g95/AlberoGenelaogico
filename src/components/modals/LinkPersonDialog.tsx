@@ -11,6 +11,7 @@ import type { RelationType, FriendSubtype } from "@/types/domain";
 
 const PARTNER_SUBTYPES = ["married", "divorced", "partner"] as const;
 const PARENT_CHILD_SUBTYPES = ["biological", "adopted", "foster", "step"] as const;
+const SIBLING_SUBTYPES_LIST = ["full", "half", "stepSibling", "adoptiveSibling"] as const;
 const FRIEND_SUBTYPES_LIST: FriendSubtype[] = [
   "university", "highSchool", "middleSchool", "elementary",
   "summerCityFriend", "sport", "romantic", "flirt",
@@ -71,6 +72,9 @@ export function LinkPersonDialog() {
     if (relType === "parent-child") {
       return PARENT_CHILD_SUBTYPES.map((s) => ({ value: s, label: t(`relationship.${s}`) }));
     }
+    if (relType === "sibling") {
+      return SIBLING_SUBTYPES_LIST.map((s) => ({ value: s, label: t(`relationship.${s}`) }));
+    }
     return FRIEND_SUBTYPES_LIST.map((s) => ({ value: s, label: t(`friendRelationship.${s}`) }));
   }, [relType, t]);
 
@@ -81,6 +85,7 @@ export function LinkPersonDialog() {
     return [
       { value: "partner", label: t("relationship.partner") },
       { value: "parent-child", label: t("relationship.parentChild") },
+      { value: "sibling", label: t("relationship.sibling") },
       { value: "friend", label: t("relationship.friendOf") },
     ];
   }, [projectType, t]);
@@ -99,7 +104,15 @@ export function LinkPersonDialog() {
   const handleSave = () => {
     if (!targetId || !fromPersonId) return;
 
-    const effectiveSubtype = subtype || (relType === "partner" ? "partner" : relType === "parent-child" ? "biological" : "university");
+    const effectiveSubtype =
+      subtype ||
+      (relType === "partner"
+        ? "partner"
+        : relType === "parent-child"
+          ? "biological"
+          : relType === "sibling"
+            ? "full"
+            : "university");
 
     let from = fromPersonId;
     let to = targetId;

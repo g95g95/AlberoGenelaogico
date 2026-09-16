@@ -27,12 +27,14 @@
     "addParent": "Aggiungi genitore",
     "addChild": "Aggiungi figlio",
     "addPartner": "Aggiungi partner",
+    "addSibling": "Aggiungi fratello/sorella",
     "removePhoto": "Rimuovi foto"
   },
   "relationship": {
     "title": "Relazioni",
     "partner": "Partner",
     "parentChild": "Genitore-Figlio",
+    "sibling": "Fratello/Sorella",
     "married": "Sposati",
     "divorced": "Divorziati",
     "partnerType": "Conviventi",
@@ -40,6 +42,10 @@
     "adopted": "Adottato",
     "foster": "Affidamento",
     "step": "Acquisito",
+    "full": "Germano/a (stessi genitori)",
+    "half": "Fratellastro/Sorellastra (un genitore in comune)",
+    "stepSibling": "Acquisito/a (figlio/a del partner di un genitore)",
+    "adoptiveSibling": "Adottivo/a",
     "type": "Tipo",
     "subtype": "Sottotipo",
     "startDate": "Data inizio",
@@ -49,11 +55,15 @@
     "parentOf": "Genitore di",
     "childOf": "Figlio di",
     "friendOf": "Amico di",
+    "siblingOf": "Fratello/Sorella di",
     "location": "Luogo",
     "link": "Collega persona",
     "selectTarget": "Seleziona persona",
     "selectType": "Tipo relazione",
-    "selectDirection": "Chi è il genitore?"
+    "selectDirection": "Chi è il genitore?",
+    "sharedParents": "Genitori in comune",
+    "sharedParentsHint": "Seleziona i genitori condivisi: nessuno o uno solo per un fratellastro, entrambi per un fratello germano.",
+    "noParentsYet": "Questa persona non ha ancora genitori registrati: puoi aggiungerli in seguito."
   },
   "friendRelationship": {
     "title": "Amicizia",

@@ -5,7 +5,7 @@ import {
 } from "@xyflow/react";
 
 type RelEdgeData = {
-  relationType: "partner" | "parent-child" | "friend";
+  relationType: "partner" | "parent-child" | "sibling" | "friend";
   subtype: string | null;
 };
 
@@ -42,6 +42,15 @@ export function RelationshipEdge(props: EdgeProps & { data?: RelEdgeData }) {
         strokeDasharray = "4 4";
       } else if (data.subtype === "step") {
         strokeDasharray = "12 4";
+      }
+    } else if (data.relationType === "sibling") {
+      strokeColor = "#8B7BB8";
+      if (data.subtype === "half") {
+        strokeDasharray = "10 5";
+      } else if (data.subtype === "stepSibling") {
+        strokeDasharray = "2 5";
+      } else if (data.subtype === "adoptiveSibling") {
+        strokeDasharray = "8 4";
       }
     } else if (data.relationType === "friend") {
       strokeWidth = 2;

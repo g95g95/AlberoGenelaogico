@@ -232,19 +232,24 @@ export function serializeGedcom(
     if (p.notes) lines.push(`1 NOTE ${p.notes}`);
   }
 
-  // Build families from partner relationships
+  // Build families from partner relationships.
+  // Sibling relationships have no GEDCOM equivalent: they are conveyed by the
+  // shared parents, so a sibling link on its own is not exported.
   const partnerRels = relationships.filter((r) => r.type === "partner");
   const parentChildRels = relationships.filter(
     (r) => r.type === "parent-child"
   );
   let famIdx = 1;
 
+  const linkKey = (parentId: string, childId: string) => `${parentId}>${childId}`;
+  const emittedLinks = new Set<string>();
+
   for (const pr of partnerRels) {
-    const famId = `F${famIdx++}`;
     const p1 = persons.find((p) => p.id === pr.from);
     const p2 = persons.find((p) => p.id === pr.to);
     if (!p1 || !p2) continue;
 
+    const famId = `F${famIdx++}`;
     const husb = p1.gender === "female" ? p2 : p1;
     const wife = p1.gender === "female" ? p1 : p2;
 
@@ -258,17 +263,43 @@ export function serializeGedcom(
       lines.push("1 DIV");
     }
 
-    // Find children of this couple
-    const parentIds = new Set([pr.from, pr.to]);
-    const childIds = new Set<string>();
-    for (const pcr of parentChildRels) {
-      if (parentIds.has(pcr.from)) childIds.add(pcr.to);
-    }
+    // Only children of BOTH partners belong to this family. A child of just
+    // one of them is a half sibling and gets its own family below, otherwise
+    // the export would silently promote it to a full sibling.
+    const childIds = new Set(
+      parentChildRels
+        .filter((r) => r.from === pr.from || r.from === pr.to)
+        .map((r) => r.to)
+    );
     for (const cid of childIds) {
-      const hasOtherParent = parentChildRels.some(
-        (r) => r.to === cid && parentIds.has(r.from)
-      );
-      if (hasOtherParent) lines.push(`1 CHIL @${cid}@`);
+      const fromFirst = parentChildRels.some((r) => r.from === pr.from && r.to === cid);
+      const fromSecond = parentChildRels.some((r) => r.from === pr.to && r.to === cid);
+      if (!fromFirst || !fromSecond) continue;
+      lines.push(`1 CHIL @${cid}@`);
+      emittedLinks.add(linkKey(pr.from, cid));
+      emittedLinks.add(linkKey(pr.to, cid));
+    }
+  }
+
+  // Children not covered by a couple (single parent, or a child of only one
+  // member of a couple) get a one-parent family so the link is not lost.
+  const leftoverByParent = new Map<string, string[]>();
+  for (const pcr of parentChildRels) {
+    if (emittedLinks.has(linkKey(pcr.from, pcr.to))) continue;
+    if (!persons.some((p) => p.id === pcr.from)) continue;
+    if (!persons.some((p) => p.id === pcr.to)) continue;
+    const children = leftoverByParent.get(pcr.from) ?? [];
+    if (!children.includes(pcr.to)) children.push(pcr.to);
+    leftoverByParent.set(pcr.from, children);
+  }
+
+  for (const [parentId, childIds] of leftoverByParent) {
+    const parent = persons.find((p) => p.id === parentId);
+    if (!parent) continue;
+    lines.push(`0 @F${famIdx++}@ FAM`);
+    lines.push(`1 ${parent.gender === "female" ? "WIFE" : "HUSB"} @${parent.id}@`);
+    for (const cid of childIds) {
+      lines.push(`1 CHIL @${cid}@`);
     }
   }
 

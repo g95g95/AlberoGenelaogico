@@ -74,14 +74,13 @@ export function FamilyTreeCanvas() {
   const edges: Edge[] = useMemo(
     () =>
       relationships.map((rel) => {
-        const isPartner = rel.type === "partner";
-        const isFriend = rel.type === "friend";
+        const isLateral = rel.type !== "parent-child";
         return {
           id: rel.id,
           source: rel.from,
           target: rel.to,
-          sourceHandle: (isPartner || isFriend) ? "right" : "bottom",
-          targetHandle: (isPartner || isFriend) ? "left" : "top",
+          sourceHandle: isLateral ? "right" : "bottom",
+          targetHandle: isLateral ? "left" : "top",
           type: "relationship",
           data: {
             relationType: rel.type,

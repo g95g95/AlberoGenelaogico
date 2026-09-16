@@ -22,7 +22,12 @@ const PersonSchema = z.object({
 
 const RelationshipSchema = z.object({
   id: z.string(),
-  type: z.union([z.literal("partner"), z.literal("parent-child"), z.literal("friend")]),
+  type: z.union([
+    z.literal("partner"),
+    z.literal("parent-child"),
+    z.literal("sibling"),
+    z.literal("friend"),
+  ]),
   from: z.string(),
   to: z.string(),
   subtype: z
@@ -34,6 +39,10 @@ const RelationshipSchema = z.object({
       z.literal("adopted"),
       z.literal("foster"),
       z.literal("step"),
+      z.literal("full"),
+      z.literal("half"),
+      z.literal("stepSibling"),
+      z.literal("adoptiveSibling"),
       z.literal("university"),
       z.literal("highSchool"),
       z.literal("middleSchool"),

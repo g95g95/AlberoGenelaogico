@@ -34,6 +34,7 @@ export function computeLayout(
 
   for (const rel of relationships) {
     if (!personIds.has(rel.from) || !personIds.has(rel.to)) continue;
+    if (rel.type === "sibling") continue;
     if (isFriendCluster || rel.type === "parent-child") {
       g.setEdge(rel.from, rel.to);
     }
@@ -54,7 +55,7 @@ export function computeLayout(
 
   if (!isFriendCluster) {
     for (const rel of relationships) {
-      if (rel.type !== "partner") continue;
+      if (rel.type !== "partner" && rel.type !== "sibling") continue;
       if (!nodePositions[rel.from] || !nodePositions[rel.to]) continue;
 
       const posA = nodePositions[rel.from];

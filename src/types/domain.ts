@@ -9,6 +9,7 @@ export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 export const RELATION_TYPES = {
   partner: "partner",
   parentChild: "parent-child",
+  sibling: "sibling",
   friend: "friend",
 } as const;
 export type RelationType = (typeof RELATION_TYPES)[keyof typeof RELATION_TYPES];
@@ -30,6 +31,19 @@ export const PARENT_CHILD_SUBTYPES = {
 } as const;
 export type ParentChildSubtype =
   (typeof PARENT_CHILD_SUBTYPES)[keyof typeof PARENT_CHILD_SUBTYPES];
+
+export const SIBLING_SUBTYPES = {
+  /** Same two parents */
+  full: "full",
+  /** Exactly one shared parent (fratellastro/sorellastra) */
+  half: "half",
+  /** No shared parent, the parents are partners (fratello/sorella acquisito) */
+  stepSibling: "stepSibling",
+  /** Sibling through adoption */
+  adoptiveSibling: "adoptiveSibling",
+} as const;
+export type SiblingSubtype =
+  (typeof SIBLING_SUBTYPES)[keyof typeof SIBLING_SUBTYPES];
 
 export const PROJECT_TYPES = {
   familyTree: "familyTree",
@@ -71,7 +85,7 @@ export interface Relationship {
   type: RelationType;
   from: string;
   to: string;
-  subtype: PartnerSubtype | ParentChildSubtype | FriendSubtype;
+  subtype: PartnerSubtype | ParentChildSubtype | SiblingSubtype | FriendSubtype;
   startDate: string | null;
   endDate: string | null;
   location: string | null;
