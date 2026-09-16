@@ -300,6 +300,18 @@ export const PersonNode = memo(function PersonNode({
                 label="P"
               />
               <ActionButton
+                tooltip={t("person.addSibling")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAddPersonMode({
+                    personId: person.id,
+                    type: "sibling",
+                    direction: "sibling",
+                  });
+                }}
+                label="S"
+              />
+              <ActionButton
                 tooltip={t("relationship.link")}
                 onClick={(e) => {
                   e.stopPropagation();

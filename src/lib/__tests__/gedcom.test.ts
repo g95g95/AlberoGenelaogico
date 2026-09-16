@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { parseGedcom, serializeGedcom } from '@/lib/gedcom'
+import type { Relationship } from '@/types/domain'
 
 const SIMPLE_GEDCOM = `0 HEAD
 1 SOUR Test
@@ -163,5 +164,88 @@ describe('GEDCOM round-trip', () => {
       expect(match).toBeDefined()
       expect(match!.gender).toBe(p.gender)
     }
+  })
+})
+
+describe('serializeGedcom with half siblings', () => {
+  const persons = [
+    {
+      id: 'dad', firstName: 'Luca', lastName: 'Verdi', gender: 'male' as const,
+      birthDate: null, birthPlace: null, deathDate: null, deathPlace: null,
+      photo: null, notes: '', customFields: {},
+    },
+    {
+      id: 'mum', firstName: 'Sara', lastName: 'Neri', gender: 'female' as const,
+      birthDate: null, birthPlace: null, deathDate: null, deathPlace: null,
+      photo: null, notes: '', customFields: {},
+    },
+    {
+      id: 'shared', firstName: 'Giulia', lastName: 'Verdi', gender: 'female' as const,
+      birthDate: null, birthPlace: null, deathDate: null, deathPlace: null,
+      photo: null, notes: '', customFields: {},
+    },
+    {
+      id: 'halfkid', firstName: 'Marco', lastName: 'Verdi', gender: 'male' as const,
+      birthDate: null, birthPlace: null, deathDate: null, deathPlace: null,
+      photo: null, notes: '', customFields: {},
+    },
+  ]
+
+  const relationships: Relationship[] = [
+    {
+      id: 'r1', type: 'partner', from: 'dad', to: 'mum',
+      subtype: 'married', startDate: null, endDate: null, location: null,
+    },
+    {
+      id: 'r2', type: 'parent-child', from: 'dad', to: 'shared',
+      subtype: 'biological', startDate: null, endDate: null, location: null,
+    },
+    {
+      id: 'r3', type: 'parent-child', from: 'mum', to: 'shared',
+      subtype: 'biological', startDate: null, endDate: null, location: null,
+    },
+    // Marco is only Luca's child: half sibling of Giulia
+    {
+      id: 'r4', type: 'parent-child', from: 'dad', to: 'halfkid',
+      subtype: 'biological', startDate: null, endDate: null, location: null,
+    },
+    {
+      id: 'r5', type: 'sibling', from: 'shared', to: 'halfkid',
+      subtype: 'half', startDate: null, endDate: null, location: null,
+    },
+  ]
+
+  it('does not list a half sibling as a child of the couple', () => {
+    const output = serializeGedcom(persons, relationships)
+    const coupleFam = output.split('0 @').find((block) => block.includes('1 WIFE @mum@'))
+
+    expect(coupleFam).toBeDefined()
+    expect(coupleFam).toContain('1 CHIL @shared@')
+    expect(coupleFam).not.toContain('1 CHIL @halfkid@')
+  })
+
+  it('keeps the half sibling attached to its single parent', () => {
+    const output = serializeGedcom(persons, relationships)
+    const singleFam = output
+      .split('0 @')
+      .find((block) => block.includes('1 HUSB @dad@') && !block.includes('1 WIFE @mum@'))
+
+    expect(singleFam).toBeDefined()
+    expect(singleFam).toContain('1 CHIL @halfkid@')
+  })
+
+  it('round-trips the half sibling as a child of one parent only', () => {
+    const reparsed = parseGedcom(serializeGedcom(persons, relationships))
+    const parentsOfHalfKid = reparsed.relationships
+      .filter((r) => r.type === 'parent-child' && r.to === 'halfkid')
+      .map((r) => r.from)
+
+    expect(parentsOfHalfKid).toEqual(['dad'])
+
+    const parentsOfShared = reparsed.relationships
+      .filter((r) => r.type === 'parent-child' && r.to === 'shared')
+      .map((r) => r.from)
+      .sort()
+    expect(parentsOfShared).toEqual(['dad', 'mum'])
   })
 })

@@ -9,6 +9,7 @@ import type { FriendSubtype, Relationship } from "@/types/domain";
 
 const PARTNER_SUBTYPE_OPTIONS = ["married", "divorced", "partner"] as const;
 const PARENT_CHILD_SUBTYPE_OPTIONS = ["biological", "adopted", "foster", "step"] as const;
+const SIBLING_SUBTYPE_OPTIONS = ["full", "half", "stepSibling", "adoptiveSibling"] as const;
 const FRIEND_SUBTYPE_OPTIONS: FriendSubtype[] = [
   "university", "highSchool", "middleSchool", "elementary",
   "summerCityFriend", "sport", "romantic", "flirt",
@@ -49,6 +50,10 @@ export function PersonRelationshipsTab({ personId }: { personId: string }) {
       adopted: t("relationship.adopted"),
       foster: t("relationship.foster"),
       step: t("relationship.step"),
+      full: t("relationship.full"),
+      half: t("relationship.half"),
+      stepSibling: t("relationship.stepSibling"),
+      adoptiveSibling: t("relationship.adoptiveSibling"),
       university: t("friendRelationship.university"),
       highSchool: t("friendRelationship.highSchool"),
       middleSchool: t("friendRelationship.middleSchool"),
@@ -66,6 +71,7 @@ export function PersonRelationshipsTab({ personId }: { personId: string }) {
 
   const getDirectionLabel = (rel: typeof relationships[0]) => {
     if (rel.type === "friend") return t("relationship.friendOf");
+    if (rel.type === "sibling") return t("relationship.siblingOf");
     if (rel.type === "parent-child") {
       return rel.from === personId ? t("relationship.parentOf") : t("relationship.childOf");
     }
@@ -78,6 +84,9 @@ export function PersonRelationshipsTab({ personId }: { personId: string }) {
     }
     if (relType === "parent-child") {
       return PARENT_CHILD_SUBTYPE_OPTIONS.map((s) => ({ value: s, label: getSubtypeLabel(s) }));
+    }
+    if (relType === "sibling") {
+      return SIBLING_SUBTYPE_OPTIONS.map((s) => ({ value: s, label: getSubtypeLabel(s) }));
     }
     return FRIEND_SUBTYPE_OPTIONS.map((s) => ({ value: s, label: getSubtypeLabel(s) }));
   };

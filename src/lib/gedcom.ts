@@ -1,183 +1,16 @@
-import type { Person, Relationship, Gender } from "@/types/domain";
-import { generateId } from "@/utils/id";
+import type { Person, Relationship } from "@/types/domain";
+import { decodeGedcom } from "@/lib/gedcomEncoding";
+import { parseGedcom } from "@/lib/gedcomParser";
+import type { GedcomImportResult } from "@/lib/gedcomParser";
 
-interface GedcomResult {
-  persons: Person[];
-  relationships: Relationship[];
-}
+export { parseGedcom, parseGedcomDate, tokenizeGedcom } from "@/lib/gedcomParser";
+export type { GedcomImportResult, GedcomSource } from "@/lib/gedcomParser";
+export { decodeGedcom, detectCharset } from "@/lib/gedcomEncoding";
 
-export function parseGedcom(text: string): GedcomResult {
-  const lines = text.split(/\r?\n/);
-  const persons: Person[] = [];
-  const relationships: Relationship[] = [];
-  const indiMap = new Map<string, Person>();
-  const famRecords: {
-    id: string;
-    husb: string | null;
-    wife: string | null;
-    children: string[];
-    married: boolean;
-    divorced: boolean;
-  }[] = [];
-
-  let currentIndi: Person | null = null;
-  let currentFam: (typeof famRecords)[0] | null = null;
-  let currentTag = "";
-  let inBirt = false;
-  let inDeat = false;
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) continue;
-
-    const match = line.match(/^(\d+)\s+(@\S+@\s+)?(.*)$/);
-    if (!match) continue;
-
-    const level = parseInt(match[1], 10);
-    const rest = match[3];
-
-    if (level === 0) {
-      currentIndi = null;
-      currentFam = null;
-      inBirt = false;
-      inDeat = false;
-
-      if (rest.includes("INDI")) {
-        const xref = match[2]?.trim().replace(/@/g, "") ?? "";
-        currentIndi = {
-          id: xref || generateId("p"),
-          firstName: "",
-          lastName: "",
-          gender: "unknown",
-          birthDate: null,
-          birthPlace: null,
-          deathDate: null,
-          deathPlace: null,
-          photo: null,
-          notes: "",
-          customFields: {},
-        };
-        indiMap.set(xref, currentIndi);
-        persons.push(currentIndi);
-      } else if (rest.includes("FAM")) {
-        const xref = match[2]?.trim().replace(/@/g, "") ?? "";
-        currentFam = {
-          id: xref,
-          husb: null,
-          wife: null,
-          children: [],
-          married: false,
-          divorced: false,
-        };
-        famRecords.push(currentFam);
-      }
-      continue;
-    }
-
-    const tagMatch = rest.match(/^(\S+)\s*(.*)?$/);
-    if (!tagMatch) continue;
-    const tag = tagMatch[1];
-    const value = (tagMatch[2] ?? "").trim().replace(/@/g, "");
-
-    if (currentIndi) {
-      if (level === 1) {
-        currentTag = tag;
-        inBirt = tag === "BIRT";
-        inDeat = tag === "DEAT";
-
-        if (tag === "NAME") {
-          const nameParts = value.split("/").map((s) => s.trim());
-          currentIndi.firstName = nameParts[0] || "";
-          currentIndi.lastName = nameParts[1] || "";
-        } else if (tag === "SEX") {
-          const sexMap: Record<string, Gender> = {
-            M: "male",
-            F: "female",
-            U: "unknown",
-          };
-          currentIndi.gender = sexMap[value] ?? "unknown";
-        } else if (tag === "NOTE") {
-          currentIndi.notes = value;
-        }
-      } else if (level === 2) {
-        if (inBirt && tag === "DATE") currentIndi.birthDate = parseGedcomDate(value);
-        if (inBirt && tag === "PLAC") currentIndi.birthPlace = value;
-        if (inDeat && tag === "DATE") currentIndi.deathDate = parseGedcomDate(value);
-        if (inDeat && tag === "PLAC") currentIndi.deathPlace = value;
-        if (currentTag === "NOTE" && tag === "CONT") {
-          currentIndi.notes += "\n" + value;
-        }
-      }
-    }
-
-    if (currentFam && level === 1) {
-      if (tag === "HUSB") currentFam.husb = value;
-      else if (tag === "WIFE") currentFam.wife = value;
-      else if (tag === "CHIL") currentFam.children.push(value);
-      else if (tag === "MARR") currentFam.married = true;
-      else if (tag === "DIV") currentFam.divorced = true;
-    }
-  }
-
-  for (const fam of famRecords) {
-    if (fam.husb && fam.wife) {
-      relationships.push({
-        id: generateId("r"),
-        type: "partner",
-        from: fam.husb,
-        to: fam.wife,
-        subtype: fam.divorced ? "divorced" : fam.married ? "married" : "partner",
-        startDate: null,
-        endDate: null,
-        location: null,
-      });
-    }
-
-    const parents = [fam.husb, fam.wife].filter(Boolean) as string[];
-    for (const childId of fam.children) {
-      for (const parentId of parents) {
-        relationships.push({
-          id: generateId("r"),
-          type: "parent-child",
-          from: parentId,
-          to: childId,
-          subtype: "biological",
-          startDate: null,
-          endDate: null,
-          location: null,
-        });
-      }
-    }
-  }
-
-  return { persons, relationships };
-}
-
-function parseGedcomDate(value: string): string | null {
-  if (!value) return null;
-  const cleaned = value.replace(/^(ABT|EST|CAL|BEF|AFT|BET)\s+/i, "").trim();
-  const fullMatch = cleaned.match(/(\d{1,2})\s+(\w{3})\s+(\d{4})/);
-  if (fullMatch) {
-    const day = fullMatch[1].padStart(2, "0");
-    const month = gedcomMonthToNum(fullMatch[2]);
-    return `${fullMatch[3]}-${month}-${day}`;
-  }
-  const monthYear = cleaned.match(/(\w{3})\s+(\d{4})/);
-  if (monthYear) {
-    return `${monthYear[2]}-${gedcomMonthToNum(monthYear[1])}`;
-  }
-  const yearOnly = cleaned.match(/(\d{4})/);
-  if (yearOnly) return yearOnly[1];
-  return null;
-}
-
-const GEDCOM_MONTHS: Record<string, string> = {
-  JAN: "01", FEB: "02", MAR: "03", APR: "04", MAY: "05", JUN: "06",
-  JUL: "07", AUG: "08", SEP: "09", OCT: "10", NOV: "11", DEC: "12",
-};
-
-function gedcomMonthToNum(m: string): string {
-  return GEDCOM_MONTHS[m.toUpperCase()] ?? "01";
+/** Reads a .ged/.gedcom file, detecting its charset before parsing. */
+export async function readGedcomFile(file: File): Promise<GedcomImportResult> {
+  const { text } = decodeGedcom(await file.arrayBuffer());
+  return parseGedcom(text);
 }
 
 const MONTH_TO_GEDCOM = [
@@ -232,19 +65,24 @@ export function serializeGedcom(
     if (p.notes) lines.push(`1 NOTE ${p.notes}`);
   }
 
-  // Build families from partner relationships
+  // Build families from partner relationships.
+  // Sibling relationships have no GEDCOM equivalent: they are conveyed by the
+  // shared parents, so a sibling link on its own is not exported.
   const partnerRels = relationships.filter((r) => r.type === "partner");
   const parentChildRels = relationships.filter(
     (r) => r.type === "parent-child"
   );
   let famIdx = 1;
 
+  const linkKey = (parentId: string, childId: string) => `${parentId}>${childId}`;
+  const emittedLinks = new Set<string>();
+
   for (const pr of partnerRels) {
-    const famId = `F${famIdx++}`;
     const p1 = persons.find((p) => p.id === pr.from);
     const p2 = persons.find((p) => p.id === pr.to);
     if (!p1 || !p2) continue;
 
+    const famId = `F${famIdx++}`;
     const husb = p1.gender === "female" ? p2 : p1;
     const wife = p1.gender === "female" ? p1 : p2;
 
@@ -258,17 +96,43 @@ export function serializeGedcom(
       lines.push("1 DIV");
     }
 
-    // Find children of this couple
-    const parentIds = new Set([pr.from, pr.to]);
-    const childIds = new Set<string>();
-    for (const pcr of parentChildRels) {
-      if (parentIds.has(pcr.from)) childIds.add(pcr.to);
-    }
+    // Only children of BOTH partners belong to this family. A child of just
+    // one of them is a half sibling and gets its own family below, otherwise
+    // the export would silently promote it to a full sibling.
+    const childIds = new Set(
+      parentChildRels
+        .filter((r) => r.from === pr.from || r.from === pr.to)
+        .map((r) => r.to)
+    );
     for (const cid of childIds) {
-      const hasOtherParent = parentChildRels.some(
-        (r) => r.to === cid && parentIds.has(r.from)
-      );
-      if (hasOtherParent) lines.push(`1 CHIL @${cid}@`);
+      const fromFirst = parentChildRels.some((r) => r.from === pr.from && r.to === cid);
+      const fromSecond = parentChildRels.some((r) => r.from === pr.to && r.to === cid);
+      if (!fromFirst || !fromSecond) continue;
+      lines.push(`1 CHIL @${cid}@`);
+      emittedLinks.add(linkKey(pr.from, cid));
+      emittedLinks.add(linkKey(pr.to, cid));
+    }
+  }
+
+  // Children not covered by a couple (single parent, or a child of only one
+  // member of a couple) get a one-parent family so the link is not lost.
+  const leftoverByParent = new Map<string, string[]>();
+  for (const pcr of parentChildRels) {
+    if (emittedLinks.has(linkKey(pcr.from, pcr.to))) continue;
+    if (!persons.some((p) => p.id === pcr.from)) continue;
+    if (!persons.some((p) => p.id === pcr.to)) continue;
+    const children = leftoverByParent.get(pcr.from) ?? [];
+    if (!children.includes(pcr.to)) children.push(pcr.to);
+    leftoverByParent.set(pcr.from, children);
+  }
+
+  for (const [parentId, childIds] of leftoverByParent) {
+    const parent = persons.find((p) => p.id === parentId);
+    if (!parent) continue;
+    lines.push(`0 @F${famIdx++}@ FAM`);
+    lines.push(`1 ${parent.gender === "female" ? "WIFE" : "HUSB"} @${parent.id}@`);
+    for (const cid of childIds) {
+      lines.push(`1 CHIL @${cid}@`);
     }
   }
 

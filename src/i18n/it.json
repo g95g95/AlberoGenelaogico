@@ -27,12 +27,14 @@
     "addParent": "Aggiungi genitore",
     "addChild": "Aggiungi figlio",
     "addPartner": "Aggiungi partner",
+    "addSibling": "Aggiungi fratello/sorella",
     "removePhoto": "Rimuovi foto"
   },
   "relationship": {
     "title": "Relazioni",
     "partner": "Partner",
     "parentChild": "Genitore-Figlio",
+    "sibling": "Fratello/Sorella",
     "married": "Sposati",
     "divorced": "Divorziati",
     "partnerType": "Conviventi",
@@ -40,6 +42,10 @@
     "adopted": "Adottato",
     "foster": "Affidamento",
     "step": "Acquisito",
+    "full": "Germano/a (stessi genitori)",
+    "half": "Fratellastro/Sorellastra (un genitore in comune)",
+    "stepSibling": "Acquisito/a (figlio/a del partner di un genitore)",
+    "adoptiveSibling": "Adottivo/a",
     "type": "Tipo",
     "subtype": "Sottotipo",
     "startDate": "Data inizio",
@@ -49,11 +55,15 @@
     "parentOf": "Genitore di",
     "childOf": "Figlio di",
     "friendOf": "Amico di",
+    "siblingOf": "Fratello/Sorella di",
     "location": "Luogo",
     "link": "Collega persona",
     "selectTarget": "Seleziona persona",
     "selectType": "Tipo relazione",
-    "selectDirection": "Chi è il genitore?"
+    "selectDirection": "Chi è il genitore?",
+    "sharedParents": "Genitori in comune",
+    "sharedParentsHint": "Seleziona i genitori condivisi: nessuno o uno solo per un fratellastro, entrambi per un fratello germano.",
+    "noParentsYet": "Questa persona non ha ancora genitori registrati: puoi aggiungerli in seguito."
   },
   "friendRelationship": {
     "title": "Amicizia",
@@ -101,9 +111,15 @@
   "import": {
     "title": "Importa",
     "dropzone": "Trascina un file qui o clicca per selezionare",
-    "formats": "Formati supportati: JSON, GEDCOM (.ged)",
+    "formats": "Formati supportati: JSON, GEDCOM (.ged, .gedcom)",
     "success": "Importazione completata",
-    "error": "Errore durante l'importazione"
+    "error": "Errore durante l'importazione",
+    "engines": "Puoi importare l'albero esportato da MyHeritage, Ancestry, FamilySearch, Geni, Gramps, Family Tree Maker e da qualunque servizio che esporti in GEDCOM.",
+    "summary": "Importate {{persons}} persone e {{families}} famiglie",
+    "fromSource": "Origine: {{source}}",
+    "warnings": "Avvisi ({{count}})",
+    "importAnother": "Importa un altro file",
+    "close": "Chiudi"
   },
   "export": {
     "title": "Esporta",
@@ -111,7 +127,23 @@
     "pdf": "Documento PDF",
     "png": "Immagine PNG",
     "svg": "Immagine SVG",
-    "gedcom": "File GEDCOM"
+    "gedcom": "File GEDCOM",
+    "pdfOptions": "Opzioni di stampa",
+    "pageFormat": "Formato pagina",
+    "pageOrientation": "Orientamento",
+    "layoutMode": "Impaginazione",
+    "modeAuto": "Automatica",
+    "modeSingle": "Tutto in una pagina",
+    "modePoster": "Poster su più fogli",
+    "orientationAuto": "Automatico",
+    "orientationPortrait": "Verticale",
+    "orientationLandscape": "Orizzontale",
+    "generatedOn": "Generato il",
+    "sheet": "Foglio",
+    "of": "di",
+    "row": "riga",
+    "column": "colonna",
+    "hint": "PDF e SVG sono vettoriali: contengono l'albero intero, non la parte visibile sullo schermo."
   },
   "panel": {
     "info": "Info",

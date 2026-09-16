@@ -76,3 +76,43 @@ describe('computeLayout', () => {
     expect(hXDiff).toBeGreaterThan(hYDiff)
   })
 })
+
+describe('computeLayout with siblings', () => {
+  it('places siblings on the same row instead of one level below', () => {
+    const persons = [makePerson('parent'), makePerson('kid1'), makePerson('kid2')]
+    const relationships: Relationship[] = [
+      {
+        id: 'r1', type: 'parent-child', from: 'parent', to: 'kid1',
+        subtype: 'biological', startDate: null, endDate: null, location: null,
+      },
+      {
+        id: 'r2', type: 'parent-child', from: 'parent', to: 'kid2',
+        subtype: 'biological', startDate: null, endDate: null, location: null,
+      },
+      {
+        id: 'r3', type: 'sibling', from: 'kid1', to: 'kid2',
+        subtype: 'half', startDate: null, endDate: null, location: null,
+      },
+    ]
+
+    const { nodePositions } = computeLayout(persons, relationships)
+
+    expect(nodePositions['kid1'].y).toBe(nodePositions['kid2'].y)
+    expect(nodePositions['kid1'].y).toBeGreaterThan(nodePositions['parent'].y)
+  })
+
+  it('keeps a sibling-only link on the same row', () => {
+    const persons = [makePerson('a'), makePerson('b')]
+    const relationships: Relationship[] = [
+      {
+        id: 'r1', type: 'sibling', from: 'a', to: 'b',
+        subtype: 'half', startDate: null, endDate: null, location: null,
+      },
+    ]
+
+    const { nodePositions } = computeLayout(persons, relationships)
+
+    expect(nodePositions['a'].y).toBe(nodePositions['b'].y)
+    expect(Math.abs(nodePositions['a'].x - nodePositions['b'].x)).toBeGreaterThan(0)
+  })
+})

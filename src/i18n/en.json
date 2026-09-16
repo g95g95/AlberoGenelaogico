@@ -27,12 +27,14 @@
     "addParent": "Add parent",
     "addChild": "Add child",
     "addPartner": "Add partner",
+    "addSibling": "Add sibling",
     "removePhoto": "Remove photo"
   },
   "relationship": {
     "title": "Relationships",
     "partner": "Partner",
     "parentChild": "Parent-Child",
+    "sibling": "Sibling",
     "married": "Married",
     "divorced": "Divorced",
     "partnerType": "Partners",
@@ -40,6 +42,10 @@
     "adopted": "Adopted",
     "foster": "Foster",
     "step": "Step",
+    "full": "Full sibling (same parents)",
+    "half": "Half-sibling (one shared parent)",
+    "stepSibling": "Step-sibling (child of a parent's partner)",
+    "adoptiveSibling": "Adoptive sibling",
     "type": "Type",
     "subtype": "Subtype",
     "startDate": "Start Date",
@@ -49,11 +55,15 @@
     "parentOf": "Parent of",
     "childOf": "Child of",
     "friendOf": "Friend of",
+    "siblingOf": "Sibling of",
     "location": "Location",
     "link": "Link person",
     "selectTarget": "Select person",
     "selectType": "Relationship type",
-    "selectDirection": "Who is the parent?"
+    "selectDirection": "Who is the parent?",
+    "sharedParents": "Shared parents",
+    "sharedParentsHint": "Pick the shared parents: none or just one for a half-sibling, both for a full sibling.",
+    "noParentsYet": "This person has no parents recorded yet — you can add them later."
   },
   "friendRelationship": {
     "title": "Friendship",
@@ -101,9 +111,15 @@
   "import": {
     "title": "Import",
     "dropzone": "Drop a file here or click to select",
-    "formats": "Supported formats: JSON, GEDCOM (.ged)",
+    "formats": "Supported formats: JSON, GEDCOM (.ged, .gedcom)",
     "success": "Import completed",
-    "error": "Error during import"
+    "error": "Error during import",
+    "engines": "You can import a tree exported from MyHeritage, Ancestry, FamilySearch, Geni, Gramps, Family Tree Maker and any service that exports GEDCOM.",
+    "summary": "Imported {{persons}} people and {{families}} families",
+    "fromSource": "Source: {{source}}",
+    "warnings": "Warnings ({{count}})",
+    "importAnother": "Import another file",
+    "close": "Close"
   },
   "export": {
     "title": "Export",
@@ -111,7 +127,23 @@
     "pdf": "PDF Document",
     "png": "PNG Image",
     "svg": "SVG Image",
-    "gedcom": "GEDCOM File"
+    "gedcom": "GEDCOM File",
+    "pdfOptions": "Print options",
+    "pageFormat": "Page size",
+    "pageOrientation": "Orientation",
+    "layoutMode": "Pagination",
+    "modeAuto": "Automatic",
+    "modeSingle": "Fit on one page",
+    "modePoster": "Poster across sheets",
+    "orientationAuto": "Automatic",
+    "orientationPortrait": "Portrait",
+    "orientationLandscape": "Landscape",
+    "generatedOn": "Generated on",
+    "sheet": "Sheet",
+    "of": "of",
+    "row": "row",
+    "column": "column",
+    "hint": "PDF and SVG are vector files: they contain the whole tree, not just the visible part of the screen."
   },
   "panel": {
     "info": "Info",
