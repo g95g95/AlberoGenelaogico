@@ -3,9 +3,11 @@ import {
   getSmoothStepPath,
   type EdgeProps,
 } from "@xyflow/react";
+import { getRelationshipStyle } from "@/lib/relationshipStyle";
+import type { RelationType } from "@/types/domain";
 
 type RelEdgeData = {
-  relationType: "partner" | "parent-child" | "sibling" | "friend";
+  relationType: RelationType;
   subtype: string | null;
 };
 
@@ -22,62 +24,18 @@ export function RelationshipEdge(props: EdgeProps & { data?: RelEdgeData }) {
     borderRadius: 16,
   });
 
-  let strokeColor = "#9CA3AF";
-  let strokeDasharray = "";
-  let strokeWidth = 2;
-
-  if (data) {
-    if (data.relationType === "partner") {
-      strokeColor = "#C87941";
-      if (data.subtype === "divorced") {
-        strokeDasharray = "5 5";
-      } else if (data.subtype === "married") {
-        strokeWidth = 3;
-      }
-    } else if (data.relationType === "parent-child") {
-      strokeColor = "#7C9A72";
-      if (data.subtype === "adopted") {
-        strokeDasharray = "8 4";
-      } else if (data.subtype === "foster") {
-        strokeDasharray = "4 4";
-      } else if (data.subtype === "step") {
-        strokeDasharray = "12 4";
-      }
-    } else if (data.relationType === "sibling") {
-      strokeColor = "#8B7BB8";
-      if (data.subtype === "half") {
-        strokeDasharray = "10 5";
-      } else if (data.subtype === "stepSibling") {
-        strokeDasharray = "2 5";
-      } else if (data.subtype === "adoptiveSibling") {
-        strokeDasharray = "8 4";
-      }
-    } else if (data.relationType === "friend") {
-      strokeWidth = 2;
-      const friendColors: Record<string, string> = {
-        university: "#3B82F6",
-        highSchool: "#60A5FA",
-        middleSchool: "#93C5FD",
-        elementary: "#818CF8",
-        summerCityFriend: "#F59E0B",
-        sport: "#10B981",
-        romantic: "#EF4444",
-        flirt: "#F472B6",
-        workColleague: "#14B8A6",
-        neighbor: "#22C55E",
-        acquaintance: "#9CA3AF",
-      };
-      strokeColor = friendColors[data.subtype ?? ""] ?? "#9CA3AF";
-    }
-  }
+  // Same styling source as the PDF/SVG/PNG exports, so print matches screen
+  const style = data
+    ? getRelationshipStyle(data.relationType, data.subtype)
+    : { color: "#9CA3AF", dash: null, width: 2, lateral: true };
 
   return (
     <BaseEdge
       path={edgePath}
       style={{
-        stroke: strokeColor,
-        strokeWidth,
-        strokeDasharray,
+        stroke: style.color,
+        strokeWidth: style.width,
+        strokeDasharray: style.dash ? style.dash.join(" ") : undefined,
       }}
     />
   );

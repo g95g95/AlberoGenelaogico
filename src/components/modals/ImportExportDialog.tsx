@@ -7,8 +7,11 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { exportProject, downloadJson, readJsonFile } from "@/lib/jsonExport";
 import { parseGedcom, downloadGedcom } from "@/lib/gedcom";
 import { exportToPdf } from "@/lib/exportPdf";
+import type { PdfLayoutMode, PdfOrientation, PdfPageFormat } from "@/lib/exportPdf";
 import { exportToPng, exportToSvg } from "@/lib/exportImage";
+import { buildTreeScene } from "@/lib/treeScene";
 import { computeLayout } from "@/lib/layoutEngine";
+import { Select } from "@/components/ui/Select";
 
 interface Props {
   open: boolean;
@@ -158,6 +161,26 @@ function ExportTab() {
   const locale = useSettingsStore((s) => s.locale);
   const settings = { theme, locale };
 
+  const [pageFormat, setPageFormat] = useState<PdfPageFormat>("a4");
+  const [orientation, setOrientation] = useState<PdfOrientation>("auto");
+  const [layoutMode, setLayoutMode] = useState<PdfLayoutMode>("auto");
+
+  // Legend entries read better without the parenthetical explanations the
+  // dropdowns need.
+  const legendLabel = useCallback(
+    (type: string, subtype: string | null) => {
+      const key = subtype ? `relationship.${subtype}` : null;
+      const raw = key && t(key) !== key ? t(key) : t(`relationship.${type === "parent-child" ? "parentChild" : type}`);
+      return raw.replace(/\s*\([^)]*\)/g, "").trim();
+    },
+    [t]
+  );
+
+  const buildScene = useCallback(
+    () => buildTreeScene(persons, relationships, layout, { subtypeLabel: legendLabel }),
+    [persons, relationships, layout, legendLabel]
+  );
+
   const handleJsonExport = () => {
     const project = exportProject({ persons, relationships, meta, layout, settings });
     downloadJson(project);
@@ -167,20 +190,51 @@ function ExportTab() {
     downloadGedcom(persons, relationships, meta.name.replace(/\s+/g, "_"));
   };
 
-  const handlePdfExport = async () => {
-    const el = document.querySelector(".react-flow") as HTMLElement;
-    if (el) await exportToPdf(el, { filename: meta.name });
+  const handlePdfExport = () => {
+    exportToPdf(buildScene(), {
+      filename: meta.name,
+      format: pageFormat,
+      orientation,
+      mode: layoutMode,
+      title: meta.name,
+      subtitle: meta.description,
+      author: meta.author,
+      locale,
+      texts: {
+        generatedOn: t("export.generatedOn"),
+        sheet: t("export.sheet"),
+        of: t("export.of"),
+        row: t("export.row"),
+        column: t("export.column"),
+      },
+    });
   };
 
   const handlePngExport = async () => {
-    const el = document.querySelector(".react-flow") as HTMLElement;
-    if (el) await exportToPng(el, meta.name);
+    await exportToPng(buildScene(), { filename: meta.name });
   };
 
-  const handleSvgExport = async () => {
-    const el = document.querySelector(".react-flow") as HTMLElement;
-    if (el) await exportToSvg(el, meta.name);
+  const handleSvgExport = () => {
+    exportToSvg(buildScene(), { filename: meta.name });
   };
+
+  const formatOptions = [
+    { value: "a4", label: "A4" },
+    { value: "a3", label: "A3" },
+    { value: "letter", label: "Letter" },
+  ];
+
+  const orientationOptions = [
+    { value: "auto", label: t("export.orientationAuto") },
+    { value: "portrait", label: t("export.orientationPortrait") },
+    { value: "landscape", label: t("export.orientationLandscape") },
+  ];
+
+  const modeOptions = [
+    { value: "auto", label: t("export.modeAuto") },
+    { value: "single", label: t("export.modeSingle") },
+    { value: "poster", label: t("export.modePoster") },
+  ];
 
   return (
     <div className="space-y-2">
@@ -189,6 +243,31 @@ function ExportTab() {
       <ExportButton label={t("export.pdf")} onClick={handlePdfExport} />
       <ExportButton label={t("export.png")} onClick={handlePngExport} />
       <ExportButton label={t("export.svg")} onClick={handleSvgExport} />
+
+      <div className="pt-3 mt-1 border-t border-gray-200 dark:border-gray-700 space-y-2">
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+          {t("export.pdfOptions")}
+        </p>
+        <Select
+          label={t("export.pageFormat")}
+          options={formatOptions}
+          value={pageFormat}
+          onChange={(e) => setPageFormat(e.target.value as PdfPageFormat)}
+        />
+        <Select
+          label={t("export.pageOrientation")}
+          options={orientationOptions}
+          value={orientation}
+          onChange={(e) => setOrientation(e.target.value as PdfOrientation)}
+        />
+        <Select
+          label={t("export.layoutMode")}
+          options={modeOptions}
+          value={layoutMode}
+          onChange={(e) => setLayoutMode(e.target.value as PdfLayoutMode)}
+        />
+        <p className="text-xs text-gray-400 dark:text-gray-500">{t("export.hint")}</p>
+      </div>
     </div>
   );
 }
